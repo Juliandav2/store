@@ -1,5 +1,6 @@
 package com.tienda.model;
 import java.math.BigDecimal;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +62,14 @@ public class Order {
 
     }
 
+    public void Paid() {
+        if (state != OrderState.CONFIRM) {
+            throw new IllegalStateException("You can only pay for one confirmed order.");
+        }
+
+        state = OrderState.PAID;
+    }
+
     public BigDecimal getDiscountWithTotal () {
         return customer.applyDiscount(getTotal());
     }
@@ -77,6 +86,10 @@ public class Order {
 
     public Customer getCustomer () {
         return customer;
+    }
+
+    public OrderState getState () {
+        return this.state;
     }
 
 
