@@ -67,6 +67,15 @@ public class Order {
 
     }
 
+    public String getId () {
+        return id;
+    }
+
+    public Customer getCustomer () {
+        return customer;
+    }
+
+
     public List<ItemOrder> getItems () {
         return Collections.unmodifiableList(items);
     }
