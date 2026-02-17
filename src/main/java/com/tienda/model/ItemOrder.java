@@ -28,7 +28,7 @@ public class ItemOrder {
 
     }
 
-    public BigDecimal calculateSubtotal () {
+    public BigDecimal getSubtotal () {
         return unitPrice.multiply(BigDecimal.valueOf(amount));
     }
 

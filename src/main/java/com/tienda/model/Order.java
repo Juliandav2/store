@@ -63,7 +63,7 @@ public class Order {
 
     public BigDecimal getTotal () {
 
-        return items.stream().map(ItemOrder::calculateSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return items.stream().map(ItemOrder::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     }
 
