@@ -61,6 +61,10 @@ public class Order {
 
     }
 
+    public BigDecimal getDiscountWithTotal () {
+        return customer.applyDiscount(getTotal());
+    }
+
     public BigDecimal getTotal () {
 
         return items.stream().map(ItemOrder::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
