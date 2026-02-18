@@ -1,14 +1,18 @@
 package com.tienda.service;
 import com.tienda.model.*;
-import java.util.HashMap;
-import java.util.Map;
+import com.tienda.repository.OrderRepository;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.*;
 
 
 public class OrderService {
 
-    private final Map<String, Order> orders = new HashMap<>();
+    private final OrderRepository repository;
+
+    public OrderService (OrderRepository repository) {
+        this.repository = repository;
+    }
 
     public Order createOrder (Customer customer) {
 
@@ -19,7 +23,7 @@ public class OrderService {
         String id = UUID.randomUUID().toString();
         Order order = new Order(id, customer);
 
-        orders.put(id, order);
+        repository.save(order);
         return order;
 
     }
@@ -44,14 +48,9 @@ public class OrderService {
     }
 
 
-    private Order getOrder (String orderId) {
+    private Order getOrder (String id) {
 
-        Order order = orders.get(orderId);
+        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Order not found"));
 
-        if (order == null) {
-            throw new NoSuchElementException("Order not found");
-        }
-
-        return order;
     }
 }
