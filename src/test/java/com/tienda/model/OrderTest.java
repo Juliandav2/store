@@ -50,4 +50,60 @@ class OrderTest {
 
     }
 
+    @Test
+    void shouldCancelOrderWhenStateIsCreated() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        assertDoesNotThrow(order::Cancel);
+        assertEquals(Order.OrderState.CANCELED, order.getState());
+    }
+
+    @Test
+    void shouldCancelOrderWhenStateIsConfirmed() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        Product product = new Product("1", "PC", new BigDecimal("1000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+        order.Confirm();
+
+        assertDoesNotThrow(order::Cancel);
+        assertEquals(Order.OrderState.CANCELED, order.getState());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCancelPaidOrder() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        Product product = new Product("1", "PC", new BigDecimal("1000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+        order.Confirm();
+        order.Paid();
+
+        assertThrows(IllegalStateException.class, order::Cancel);
+    }
+
+    @Test
+    void shouldReturnTrueWhenOrderIsPaid() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        Product product = new Product("1", "PC", new BigDecimal("1000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+        order.Confirm();
+        order.Paid();
+
+        assertTrue(order.isRefundable());
+    }
+
+    @Test
+    void shouldReturnFalseWhenOrderIsCreated() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        assertFalse(order.isRefundable());
+    }
+
 }

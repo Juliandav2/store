@@ -67,6 +67,11 @@ public class OrderService {
         order.Paid();
     }
 
+    public void cancelOrder (String orderId) {
+        Order order = getOrder(orderId);
+        order.Cancel();
+    }
+
 
     private Order getOrder (String id) {
 

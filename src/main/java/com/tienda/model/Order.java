@@ -62,11 +62,15 @@ public class Order {
     public void Cancel () {
 
         if (state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED) {
-            throw new IllegalStateException("An order cannot be cancelled in this state " + state);
+            throw new IllegalStateException("Cannot cancel order in state " + state);
         }
 
         state = OrderState.CANCELED;
 
+    }
+
+    public boolean isRefundable () {
+        return state == OrderState.PAID || state == OrderState.SENT;
     }
 
     public void Paid() {
