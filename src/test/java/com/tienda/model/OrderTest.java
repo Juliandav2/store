@@ -1,5 +1,6 @@
 package com.tienda.model;
 
+import com.tienda.exepcion.EmptyOrderException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -11,10 +12,9 @@ class OrderTest {
 
     @Test
     void DoNotConfirmAnEmptyOrder () {
-        Customer customer = new RegularCustomer("1", "Juan");
-        Order order = new Order("1", customer);
 
-        assertThrows(IllegalStateException.class, order::Confirm);
+        Order order = new Order("1", new RegularCustomer("1", "Julian"));
+        assertThrows(EmptyOrderException.class, order::Confirm);
     }
 
     @Test

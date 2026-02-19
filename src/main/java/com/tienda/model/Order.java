@@ -1,5 +1,7 @@
 package com.tienda.model;
 import com.tienda.discount.DiscountStrategy;
+import com.tienda.exepcion.EmptyOrderException;
+import com.tienda.exepcion.InvalidOrderStateException;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -36,7 +38,7 @@ public class Order {
     public void addItem (ItemOrder item) {
 
         if (state != OrderState.CREATE) {
-            throw new IllegalStateException("Only items in the CREATED state can be added");
+            throw new InvalidOrderStateException("Only items in the CREATED state can be added");
         }
 
         items.add(item);
@@ -46,7 +48,11 @@ public class Order {
     public void Confirm () {
 
         if (items.isEmpty()) {
-            throw new IllegalStateException("An empty order cannot be confirmed");
+            throw new EmptyOrderException("Order cannot be empty");
+        }
+
+        if (state != OrderState.CREATE) {
+            throw new InvalidOrderStateException("Invalid state: " + state);
         }
 
         state = OrderState.CONFIRM;
@@ -65,7 +71,7 @@ public class Order {
 
     public void Paid() {
         if (state != OrderState.CONFIRM) {
-            throw new IllegalStateException("You can only pay for one confirmed order.");
+            throw new InvalidOrderStateException("You can only pay for one confirmed order.");
         }
 
         state = OrderState.PAID;
