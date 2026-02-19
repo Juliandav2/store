@@ -1,6 +1,8 @@
 package com.tienda.model;
 
 import com.tienda.exepcion.EmptyOrderException;
+import com.tienda.repository.InMemoryRepository;
+import com.tienda.service.OrderService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -47,6 +49,5 @@ class OrderTest {
         assertThrows(IllegalStateException.class, order::Cancel);
 
     }
-
 
 }

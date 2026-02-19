@@ -33,4 +33,31 @@ class OrderServiceTest {
         assertThrows(java.util.NoSuchElementException.class, () -> service.confirmOrder("Invalid - ID"));
 
     }
+
+    @Test
+    void shouldThrowExceptionWhenProductIsNull () {
+        OrderService service = new OrderService(new InMemoryRepository());
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = service.createOrder(customer);
+
+        assertThrows(IllegalArgumentException.class,() -> service.addProduct(order.getId(), null, 1));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenQuantityIsInvalid () {
+        OrderService service = new OrderService(new InMemoryRepository());
+        Customer customer = new RegularCustomer("1", "Julian");
+        Product product = new Product("1", "PC Gamer", new BigDecimal(5000000));
+        Order order = service.createOrder(customer);
+
+        assertThrows(IllegalArgumentException.class, () -> service.addProduct(order.getId(), product, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOrderIdIsInvalid () {
+        OrderService service = new OrderService(new InMemoryRepository());
+        Product product = new Product("1", "PC gamer", new BigDecimal(5000000));
+
+        assertThrows(IllegalArgumentException.class, () -> service.addProduct("", product, 1));
+    }
 }

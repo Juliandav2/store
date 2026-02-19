@@ -1,6 +1,8 @@
 package com.tienda.service;
 import com.tienda.model.*;
 import com.tienda.repository.OrderRepository;
+
+import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.*;
@@ -29,6 +31,24 @@ public class OrderService {
     }
 
     public void addProduct (String orderId, Product product, int quantity) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be null or empty");
+
+        }
+
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
+        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Product price must be greater than zero");
+        }
 
         Order order = getOrder (orderId);
         ItemOrder item = new ItemOrder(product, quantity, product.getPrice());
