@@ -1,5 +1,8 @@
 package com.tienda.model;
 
+import com.tienda.discount.DiscountStrategy;
+import com.tienda.discount.RegularDiscount;
+
 import java.math.BigDecimal;
 
 public class RegularCustomer extends Customer {
@@ -9,8 +12,8 @@ public class RegularCustomer extends Customer {
     }
 
     @Override
-    public BigDecimal applyDiscount (BigDecimal total) {
-        return total;
+    public DiscountStrategy getDiscountStrategy () {
+        return new RegularDiscount();
     }
 
 }

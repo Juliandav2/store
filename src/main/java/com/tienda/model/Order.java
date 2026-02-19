@@ -1,6 +1,7 @@
 package com.tienda.model;
+import com.tienda.discount.DiscountStrategy;
+
 import java.math.BigDecimal;
-import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -70,8 +71,8 @@ public class Order {
         state = OrderState.PAID;
     }
 
-    public BigDecimal getDiscountWithTotal () {
-        return customer.applyDiscount(getTotal());
+    public BigDecimal getTotalWithDiscount () {
+        return customer.getDiscountStrategy().applyDiscount(getTotal());
     }
 
     public BigDecimal getTotal () {
@@ -92,11 +93,7 @@ public class Order {
         return this.state;
     }
 
-
     public List<ItemOrder> getItems () {
         return Collections.unmodifiableList(items);
     }
-
-
-
 }

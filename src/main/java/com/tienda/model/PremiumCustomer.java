@@ -1,5 +1,8 @@
 package com.tienda.model;
 
+import com.tienda.discount.DiscountStrategy;
+import com.tienda.discount.PremiumDiscount;
+
 import java.math.BigDecimal;
 
 public class PremiumCustomer extends Customer {
@@ -11,8 +14,7 @@ public class PremiumCustomer extends Customer {
     }
 
     @Override
-    public BigDecimal applyDiscount (BigDecimal total) {
-        BigDecimal discount = total.multiply(DISCOUNT);
-        return total.subtract(discount);
+    public DiscountStrategy getDiscountStrategy () {
+        return new PremiumDiscount();
     }
 }

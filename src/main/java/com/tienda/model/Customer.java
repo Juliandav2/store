@@ -1,4 +1,6 @@
 package com.tienda.model;
+import com.tienda.discount.DiscountStrategy;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -21,5 +23,5 @@ public abstract class Customer {
         return name;
     }
 
-    public abstract BigDecimal applyDiscount (BigDecimal total);
+    public abstract DiscountStrategy getDiscountStrategy ();
 }
