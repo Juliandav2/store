@@ -1,13 +1,8 @@
 package com.tienda.model;
-import com.tienda.discount.DiscountStrategy;
 import com.tienda.exepcion.EmptyOrderException;
 import com.tienda.exepcion.InvalidOrderStateException;
-
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class Order {
@@ -22,13 +17,13 @@ public class Order {
         this.id = Objects.requireNonNull(id);
         this.customer = Objects.requireNonNull(customer);
         this.items = new ArrayList<>();
-        this.state = OrderState.CREATE;
+        this.state = OrderState.CREATED;
 
     }
 
     public enum OrderState {
-        CREATE,
-        CONFIRM,
+        CREATED,
+        CONFIRMED,
         PAID,
         SENT,
         DELIVERED,
@@ -37,7 +32,7 @@ public class Order {
 
     public void addItem (ItemOrder item) {
 
-        if (state != OrderState.CREATE) {
+        if (state != OrderState.CREATED) {
             throw new InvalidOrderStateException("Only items in the CREATED state can be added");
         }
 
@@ -45,25 +40,36 @@ public class Order {
 
     }
 
-    public void Confirm () {
+    public void confirm () {
 
         if (items.isEmpty()) {
             throw new EmptyOrderException("Order cannot be empty");
         }
 
-        if (state != OrderState.CREATE) {
+        if (state != OrderState.CREATED) {
             throw new InvalidOrderStateException("Invalid state: " + state);
         }
 
-        state = OrderState.CONFIRM;
+        state = OrderState.CONFIRMED;
 
     }
 
-    public void Cancel () {
-
-        if (state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED) {
-            throw new IllegalStateException("Cannot cancel order in state " + state);
+    public void pay() {
+        if (state != OrderState.CONFIRMED) {
+            throw new InvalidOrderStateException("Order must be CONFIRMED to be paid");
         }
+
+        state = OrderState.PAID;
+    }
+
+    public void cancel () {
+
+        if (state == OrderState.CANCELED) {
+            throw new IllegalStateException("Order is already canceled");
+        }
+
+        if (state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED)
+            throw new IllegalStateException("Cannot be order in state " + state);
 
         state = OrderState.CANCELED;
 
@@ -73,26 +79,19 @@ public class Order {
         return state == OrderState.PAID || state == OrderState.SENT;
     }
 
-    public void Paid() {
-        if (state != OrderState.CONFIRM) {
-            throw new InvalidOrderStateException("You can only pay for one confirmed order.");
-        }
+    public BigDecimal getTotal () {
+        return items.stream().map(ItemOrder::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        state = OrderState.PAID;
     }
 
     public BigDecimal getTotalWithDiscount () {
         return customer.getDiscountStrategy().applyDiscount(getTotal());
-    }
-
-    public BigDecimal getTotal () {
-
-        return items.stream().map(ItemOrder::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     }
 
     public String getId () {
         return id;
+
     }
 
     public Customer getCustomer () {
