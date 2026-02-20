@@ -10,21 +10,41 @@ public class Product {
 
     public Product (String id, String name, BigDecimal price) {
 
+        this.id = validateId (id);
+        this.name = validateName (name);
+        this.price = validatePrice (price);
+
+    }
+
+    private String validateId (String id) {
+
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("Id cannot be null or empty");
+            throw new IllegalArgumentException("Product id cannot be null or empty");
         }
+
+        return id;
+    }
+
+    private String validateName (String name) {
 
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+            throw new IllegalArgumentException("Product name cannot be a null or empty");
         }
 
-        if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
+        return name;
+    }
+
+    private BigDecimal validatePrice (BigDecimal price) {
+
+        if (price == null) {
+            throw new IllegalArgumentException("Price cannot be null");
+        }
+
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
 
-        this.id = Objects.requireNonNull(id, "Id cannot be null");
-        this.name = Objects.requireNonNull(name, "Name cannot be null");
-        this.price = Objects.requireNonNull(price, "Price cannot be null");
+        return price;
     }
 
     public String getId () {
@@ -40,16 +60,7 @@ public class Product {
     }
 
     public void updatePrice (BigDecimal newPrice) {
-
-        if (newPrice == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
-
-        if (newPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Price cannot be negative");
-        }
-
-        this.price = newPrice;
+        this.price = validatePrice(newPrice);
     }
 
 }
