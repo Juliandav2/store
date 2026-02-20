@@ -1,7 +1,5 @@
 package com.tienda.model;
 import com.tienda.discount.DiscountStrategy;
-
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public abstract class Customer {
@@ -11,8 +9,9 @@ public abstract class Customer {
 
     public Customer (String id, String name) {
 
-        this.id = Objects.requireNonNull(id);
-        this.name = Objects.requireNonNull(name);
+        this.id = Objects.requireNonNull(id, "Id cannot be null");
+        this.name = Objects.requireNonNull(name, "Name cannot be null");
+
     }
 
     public String getId () {

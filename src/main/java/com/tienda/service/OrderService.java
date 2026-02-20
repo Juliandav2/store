@@ -59,19 +59,18 @@ public class OrderService {
 
     public void confirmOrder (String orderId) {
         Order order = getOrder(orderId);
-        order.Confirm();
+        order.confirm();
     }
 
     public void paidOrder (String orderId) {
         Order order = getOrder(orderId);
-        order.Paid();
+        order.pay();
     }
 
     public void cancelOrder (String orderId) {
         Order order = getOrder(orderId);
-        order.Cancel();
+        order.cancel();
     }
-
 
     private Order getOrder (String id) {
 
