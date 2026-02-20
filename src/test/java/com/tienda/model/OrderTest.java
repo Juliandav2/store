@@ -1,13 +1,7 @@
 package com.tienda.model;
-
 import com.tienda.exepcion.EmptyOrderException;
-import com.tienda.repository.InMemoryRepository;
-import com.tienda.service.OrderService;
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
-import java.util.PrimitiveIterator;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
@@ -16,7 +10,7 @@ class OrderTest {
     void DoNotConfirmAnEmptyOrder () {
 
         Order order = new Order("1", new RegularCustomer("1", "Julian"));
-        assertThrows(EmptyOrderException.class, order::Confirm);
+        assertThrows(EmptyOrderException.class, order::confirm);
     }
 
     @Test
@@ -28,9 +22,9 @@ class OrderTest {
         ItemOrder item = new ItemOrder(product, 1, product.getPrice());
 
         order.addItem(item);
-        order.Confirm();
+        order.confirm();
 
-        assertEquals(Order.OrderState.CONFIRM,order.getState());
+        assertEquals(Order.OrderState.CONFIRMED,order.getState());
 
     }
 
@@ -43,10 +37,10 @@ class OrderTest {
         ItemOrder item = new ItemOrder(product, 1, product.getPrice());
 
         order.addItem(item);
-        order.Confirm();
-        order.Paid();
+        order.confirm();
+        order.pay();
 
-        assertThrows(IllegalStateException.class, order::Cancel);
+        assertThrows(IllegalStateException.class, order::cancel);
 
     }
 
@@ -55,7 +49,7 @@ class OrderTest {
         Customer customer = new RegularCustomer("1", "Julian");
         Order order = new Order("1", customer);
 
-        assertDoesNotThrow(order::Cancel);
+        assertDoesNotThrow(order::cancel);
         assertEquals(Order.OrderState.CANCELED, order.getState());
     }
 
@@ -66,9 +60,9 @@ class OrderTest {
 
         Product product = new Product("1", "PC", new BigDecimal("1000"));
         order.addItem(new ItemOrder(product, 1, product.getPrice()));
-        order.Confirm();
+        order.confirm();
 
-        assertDoesNotThrow(order::Cancel);
+        assertDoesNotThrow(order::cancel);
         assertEquals(Order.OrderState.CANCELED, order.getState());
     }
 
@@ -79,10 +73,10 @@ class OrderTest {
 
         Product product = new Product("1", "PC", new BigDecimal("1000"));
         order.addItem(new ItemOrder(product, 1, product.getPrice()));
-        order.Confirm();
-        order.Paid();
+        order.confirm();
+        order.pay();
 
-        assertThrows(IllegalStateException.class, order::Cancel);
+        assertThrows(IllegalStateException.class, order::cancel);
     }
 
     @Test
@@ -92,8 +86,8 @@ class OrderTest {
 
         Product product = new Product("1", "PC", new BigDecimal("1000"));
         order.addItem(new ItemOrder(product, 1, product.getPrice()));
-        order.Confirm();
-        order.Paid();
+        order.confirm();
+        order.pay();
 
         assertTrue(order.isRefundable());
     }
