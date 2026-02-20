@@ -60,4 +60,18 @@ class OrderServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> service.addProduct("", product, 1));
     }
+
+    @Test
+    void shouldNotAddProductWithInvalidQuantity () {
+        OrderRepository repository = new InMemoryRepository();
+        OrderService service = new OrderService(repository);
+
+        Customer customer = new RegularCustomer("1", "Julian");
+        Product product = new Product("1", "PC Gamer", new BigDecimal("5000000"));
+
+        Order order = service.createOrder(customer);
+
+        assertThrows(IllegalArgumentException.class, () -> service.addProduct(order.getId(), product, 0));
+    }
+
 }

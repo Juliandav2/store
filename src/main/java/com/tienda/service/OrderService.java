@@ -32,29 +32,29 @@ public class OrderService {
 
     public void addProduct (String orderId, Product product, int quantity) {
 
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID cannot be null or empty");
-
-        }
-
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
 
         }
 
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new IllegalArgumentException("Quantity must be greater tahan 0");
         }
 
-        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Product price must be greater than zero");
+        Order order = getOrder(orderId);
+
+        if (order.getState() != Order.OrderState.CREATED) {
+            throw new IllegalStateException("Cannot add products to order in state " + order.getState());
         }
 
-        Order order = getOrder (orderId);
         ItemOrder item = new ItemOrder(product, quantity, product.getPrice());
-
         order.addItem(item);
 
+        boolean exists = order.getItems().stream().anyMatch(i -> i.getProduct().getId().equals(product.getId()));
+
+        if (exists) {
+            throw new IllegalArgumentException("Product already added to order");
+        }
     }
 
     public void confirmOrder (String orderId) {
