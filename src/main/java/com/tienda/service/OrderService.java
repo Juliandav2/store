@@ -1,80 +1,45 @@
 package com.tienda.service;
+import com.tienda.application.*;
 import com.tienda.model.*;
 import com.tienda.repository.OrderRepository;
-
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-import java.util.*;
 
 
 public class OrderService {
 
-    private final OrderRepository repository;
+    private final CreateOrderUseCase createOrderUseCase;
+    private final AddProductOrderUserCase addProductOrderUserCase;
+    // private final ConfirmOrderUserCase confirmOrderUserCase;
+    // private final PayOrderUserCase payOrderUserCase;
+    // private final CancelOrderUserCase cancelOrderUserCase;
 
     public OrderService (OrderRepository repository) {
-        this.repository = repository;
+
+        this.createOrderUseCase = new CreateOrderUseCase(repository);
+        this.addProductOrderUserCase = new AddProductOrderUserCase(repository);
+        // this.confirmOrderUserCase = new ConfirmOrderUserCase(repository);
+        // this.payOrderUserCase = new PayOrderUserCase(repository);
+        // this.cancelOrderUserCase = new CancelOrderUserCase(repository);
+
     }
 
     public Order createOrder (Customer customer) {
-
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer cannot be null");
-        }
-
-        String id = UUID.randomUUID().toString();
-        Order order = new Order(id, customer);
-
-        repository.save(order);
-        return order;
-
+        return createOrderUseCase.execute(customer);
     }
 
     public void addProduct (String orderId, Product product, int quantity) {
-
-        if (product == null) {
-            throw new IllegalArgumentException("Product cannot be null");
-
-        }
-
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater tahan 0");
-        }
-
-        Order order = getOrder(orderId);
-
-        if (order.getState() != Order.OrderState.CREATED) {
-            throw new IllegalStateException("Cannot add products to order in state " + order.getState());
-        }
-
-        ItemOrder item = new ItemOrder(product, quantity, product.getPrice());
-        order.addItem(item);
-
-        boolean exists = order.getItems().stream().anyMatch(i -> i.getProduct().getId().equals(product.getId()));
-
-        if (exists) {
-            throw new IllegalArgumentException("Product already added to order");
-        }
+        addProductOrderUserCase.execute(orderId, product,quantity);
     }
 
-    public void confirmOrder (String orderId) {
-        Order order = getOrder(orderId);
-        order.confirm();
+    public void confirm (String orderId) {
+        // confirmOrderUserCase.execute(orderId);
     }
 
-    public void paidOrder (String orderId) {
-        Order order = getOrder(orderId);
-        order.pay();
+    public void pay (String orderId) {
+        // payOrderUserCase.execute(orderId);
     }
 
-    public void cancelOrder (String orderId) {
-        Order order = getOrder(orderId);
-        order.cancel();
-    }
-
-    private Order getOrder (String id) {
-
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Order not found"));
-
+    public void cancel (String orderId) {
+        // cancelOrderUserCase.execute(orderId);
     }
 }
+
