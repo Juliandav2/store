@@ -60,4 +60,21 @@ public class ApplicationTest {
                 add.execute(order.getId(), product, 0)
         );
     }
+
+    @Test
+    void shouldConfirmOrderSuccessfully () {
+        OrderRepository repository = new InMemoryRepository();
+        CreateOrderUseCase create = new CreateOrderUseCase(repository);
+        ConfirmOrderUserCase confirm = new ConfirmOrderUserCase(repository);
+
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = create.execute(customer);
+
+        Product product = new Product("1", "Mouse", new BigDecimal("300000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+
+        confirm.execute(order.getId());
+
+        assertEquals(Order.OrderState.CONFIRMED, order.getState());
+    }
 }
