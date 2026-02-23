@@ -55,6 +55,7 @@ public class Order {
     }
 
     public void pay() {
+
         if (state != OrderState.CONFIRMED) {
             throw new InvalidOrderStateException("Order must be CONFIRMED to be paid");
         }

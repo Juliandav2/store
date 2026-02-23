@@ -1,4 +1,5 @@
 package com.tienda.application;
+import com.tienda.exepcion.OrderNotFoundException;
 import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
 import com.tienda.service.OrderService;
@@ -13,7 +14,7 @@ public class PayOrderUserCase {
 
     public void execute (String orderId) {
 
-        Order order = repository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         order.pay();
     }
 }

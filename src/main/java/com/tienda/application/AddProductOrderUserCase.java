@@ -1,4 +1,5 @@
 package com.tienda.application;
+import com.tienda.exepcion.OrderNotFoundException;
 import com.tienda.model.*;
 import com.tienda.repository.OrderRepository;
 
@@ -21,7 +22,7 @@ public class AddProductOrderUserCase {
             throw new IllegalArgumentException("Quantity must be greater than 0");
         }
 
-        Order order = repository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         ItemOrder item = new ItemOrder(product, quantity, product.getPrice());
         order.addItem(item);
     }
