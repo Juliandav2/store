@@ -18,8 +18,8 @@ class OrderServiceTest {
         Order order = service.createOrder(customer);
 
         service.addProduct(order.getId(),product,1);
-        service.confirmOrder(order.getId());
-        service.paidOrder(order.getId());
+        service.confirm(order.getId());
+        service.pay(order.getId());
 
         assertEquals(Order.OrderState.PAID, order.getState());
     }
@@ -30,7 +30,7 @@ class OrderServiceTest {
         OrderRepository repository = new InMemoryRepository();
         OrderService service = new OrderService(repository);
 
-        assertThrows(java.util.NoSuchElementException.class, () -> service.confirmOrder("Invalid - ID"));
+        assertThrows(java.util.NoSuchElementException.class, () -> service.confirm("Invalid - ID"));
 
     }
 

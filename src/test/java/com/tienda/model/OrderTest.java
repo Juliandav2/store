@@ -1,5 +1,6 @@
 package com.tienda.model;
 import com.tienda.exepcion.EmptyOrderException;
+import com.tienda.exepcion.InvalidOrderStateException;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,6 +99,42 @@ class OrderTest {
         Order order = new Order("1", customer);
 
         assertFalse(order.isRefundable());
+    }
+
+    @Test
+    void shouldThrowWhenConfirmingEmptyOrder() {
+
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        assertThrows(EmptyOrderException.class, order::confirm);
+    }
+
+    @Test
+    void shouldNotAllowPayIfNotConfirmed() {
+
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        Product product = new Product("1", "Mouse", new BigDecimal("50000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+
+        assertThrows(InvalidOrderStateException.class, order::pay);
+    }
+
+    @Test
+    void shouldNotCancelPaidOrder() {
+
+        Customer customer = new RegularCustomer("1", "Julian");
+        Order order = new Order("1", customer);
+
+        Product product = new Product("1", "Mouse", new BigDecimal("50000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+
+        order.confirm();
+        order.pay();
+
+        assertThrows(IllegalStateException.class, order::cancel);
     }
 
 }
