@@ -1,3 +1,10 @@
+/**
+ * Base exception to all business rule violations within the domain.
+ *
+ * <p>All custom domain and application exceptions should extend this class
+ * to ensure consistent error handling across layers.</p>
+ */
+
 package com.tienda.model;
 import com.tienda.exepcion.EmptyOrderException;
 import com.tienda.exepcion.InvalidOrderStateException;
@@ -40,6 +47,14 @@ public class Order {
 
     }
 
+    /**
+     * Confirms the order if it contains at least one item
+     * and is currently in CREATED state.
+     *
+     * @throws EmptyOrderException if the order has no items
+     * @throws InvalidOrderStateException if the order is not in CREATED state
+     */
+
     public void confirm () {
 
         if (items.isEmpty()) {
@@ -54,6 +69,14 @@ public class Order {
 
     }
 
+    /**
+     * Marks the order as paid.
+     *
+     * <p>The order must be in CONFIRMED state before payment.</p>
+     *
+     * @throws InvalidOrderStateException if the order is not CONFIRMED
+     */
+
     public void pay() {
 
         if (state != OrderState.CONFIRMED) {
@@ -62,6 +85,12 @@ public class Order {
 
         state = OrderState.PAID;
     }
+
+    /**
+     * Cancels the order unless it has already been paid.
+     *
+     * @throws InvalidOrderStateException if the order is already PAID or CANCELLED
+     */
 
     public void cancel () {
 
