@@ -1,6 +1,6 @@
 package com.tienda.model;
-import com.tienda.exepcion.EmptyOrderException;
-import com.tienda.exepcion.InvalidOrderStateException;
+import com.tienda.exception.EmptyOrderException;
+import com.tienda.exception.InvalidOrderStateException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -43,10 +43,6 @@ public class Order {
         this.customer = Objects.requireNonNull(customer);
         this.items = new ArrayList<>();
         this.state = OrderState.CREATED;
-
-        /**
-         * Represents all possible states of an order.
-         */
 
     }
 
@@ -128,12 +124,9 @@ public class Order {
 
     public void cancel () {
 
-        if (state == OrderState.CANCELED) {
-            throw new InvalidOrderStateException("Cannot cancel order in state " + state );
+        if (state == OrderState.CANCELED || state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED) {
+            throw new InvalidOrderStateException("Cannot cancel order in state " + state);
         }
-
-        if (state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED)
-            throw new IllegalStateException("Cannot be order in state " + state);
 
         state = OrderState.CANCELED;
 
