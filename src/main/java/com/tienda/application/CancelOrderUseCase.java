@@ -4,37 +4,54 @@ import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
 
 /**
- * Application use case responsible for processing
- * the payment of an Order.
+ * Application use case responsible for canceling an Order.
  *
  * <p>
- * This use case ensures the Order is retrieved,
- * delegates payment state transition to the domain,
+ * This use case retrieves the Order,
+ * delegates cancellation validation to the domain,
  * and persists the updated aggregate.
  * </p>
  *
  * <p>
- * Validation of valid state transitions
- * is handled within the Order entity.
+ * Restrictions such as preventing cancellation
+ * after payment or delivery are enforced
+ * inside the Order entity.
  * </p>
  *
- * <p>
  * Layer: Application
- * Responsibility: Orchestrating payment workflow
- * </p>
+ * Responsibility: Managing order cancellation workflow
  */
 
-public class CancelOrderUserCase {
+public class CancelOrderUseCase {
 
     private final OrderRepository repository;
 
-    public CancelOrderUserCase (OrderRepository repository) {
+    /**
+     * Creates a new instance of the use case.
+     *
+     * @param repository repository used to retrieve and persist orders
+     */
+
+    public CancelOrderUseCase(OrderRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Cancels an existing order.
+     *
+     * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
+     * @throws OrderNotFoundException if the order does not exist
+     */
+
     public void execute (String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("OrderId cannot be null or blank");
+        }
 
         Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         order.cancel();
+        repository.save(order);
     }
 }
