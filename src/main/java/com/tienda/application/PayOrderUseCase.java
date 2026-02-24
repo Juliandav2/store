@@ -4,36 +4,54 @@ import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
 
 /**
- * Application use case responsible for confirming an Order.
+ * Application use case responsible for processing
+ * the payment of an Order.
  *
  * <p>
- * This use case loads the Order,
- * delegates confirmation logic to the domain,
- * and persists state changes.
+ * This use case retrieves the Order,
+ * delegates payment state transition to the domain,
+ * and persists the updated aggregate.
  * </p>
  *
  * <p>
- * Domain invariants such as preventing confirmation
- * of empty orders are enforced inside the Order entity.
+ * Validation of valid payment transitions
+ * is handled within the Order entity.
  * </p>
  *
- * <p>
  * Layer: Application
- * Responsibility: State transition orchestration
- * </p>
+ * Responsibility: Orchestrating payment workflow
  */
 
-public class PayOrderUserCase {
+public class PayOrderUseCase {
 
     private final OrderRepository repository;
 
-    public PayOrderUserCase (OrderRepository repository) {
+    /**
+     * Creates a new instance of the use case.
+     *
+     * @param repository repository used to retrieve and persist orders
+     */
+
+    public PayOrderUseCase(OrderRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Processes payment for an existing order.
+     *
+     * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
+     * @throws OrderNotFoundException if the order does not exist
+     */
+
     public void execute (String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("OrderId cannot be null or blank");
+        }
 
         Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         order.pay();
+        repository.save(order);
     }
 }
