@@ -13,7 +13,7 @@ import com.tienda.repository.OrderRepository;
 public class OrderService {
 
     private final CreateOrderUseCase createOrderUseCase;
-    private final AddProductOrderUserCase addProductOrderUserCase;
+    private final AddProductOrderUseCase addProductOrderUserCase;
     private final ConfirmOrderUserCase confirmOrderUserCase;
     private final PayOrderUserCase payOrderUserCase;
     private final CancelOrderUserCase cancelOrderUserCase;
@@ -21,7 +21,7 @@ public class OrderService {
     public OrderService (OrderRepository repository) {
 
         this.createOrderUseCase = new CreateOrderUseCase(repository);
-        this.addProductOrderUserCase = new AddProductOrderUserCase(repository);
+        this.addProductOrderUserCase = new AddProductOrderUseCase(repository);
         this.confirmOrderUserCase = new ConfirmOrderUserCase(repository);
         this.payOrderUserCase = new PayOrderUserCase(repository);
         this.cancelOrderUserCase = new CancelOrderUserCase(repository);

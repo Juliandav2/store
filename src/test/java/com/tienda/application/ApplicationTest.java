@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.tienda.repository.*;
 import com.tienda.model.*;
-import java.util.*;
+
 import java.math.BigDecimal;
 
 public class ApplicationTest {
@@ -28,7 +28,7 @@ public class ApplicationTest {
 
         OrderRepository repository = new InMemoryRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
-        AddProductOrderUserCase add = new AddProductOrderUserCase(repository);
+        AddProductOrderUseCase add = new AddProductOrderUseCase(repository);
 
         Customer customer = new RegularCustomer("1", "Julian");
         Order order = create.execute(customer);
@@ -49,7 +49,7 @@ public class ApplicationTest {
 
         OrderRepository repository = new InMemoryRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
-        AddProductOrderUserCase add = new AddProductOrderUserCase(repository);
+        AddProductOrderUseCase add = new AddProductOrderUseCase(repository);
 
         Customer customer = new RegularCustomer("1", "Julian");
         Order order = create.execute(customer);

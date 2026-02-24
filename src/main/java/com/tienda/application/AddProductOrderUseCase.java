@@ -24,19 +24,40 @@ import com.tienda.repository.OrderRepository;
  * </p>
  */
 
-public class AddProductOrderUserCase {
+public class AddProductOrderUseCase {
 
     private final OrderRepository repository;
 
-    public AddProductOrderUserCase (OrderRepository repository) {
+    /**
+     * Creates a new instance of the use case.
+     *
+     * @param repository repository used to retrieve and persist orders
+     */
+
+    public AddProductOrderUseCase(OrderRepository repository) {
         this.repository = repository;
 
     }
 
+    /**
+     * Adds a product to an existing order.
+     *
+     * @param orderId  identifier of the order
+     * @param product  product to be added
+     * @param quantity quantity of the product
+     * @throws IllegalArgumentException if orderId or product is null,
+     *                                  or quantity is not greater than zero
+     * @throws OrderNotFoundException if the order does not exist
+     */
+
     public void execute (String orderId, Product product, int quantity) {
 
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("OrderId cannot be null or blank");
+        }
+
         if (product == null) {
-            throw new IllegalArgumentException("Product cannot be negative");
+            throw new IllegalArgumentException("Product cannot be null");
         }
 
         if (quantity <= 0) {
@@ -46,5 +67,6 @@ public class AddProductOrderUserCase {
         Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         ItemOrder item = new ItemOrder(product, quantity, product.getPrice());
         order.addItem(item);
+        repository.save(order);
     }
 }
