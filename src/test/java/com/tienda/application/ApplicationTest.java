@@ -65,7 +65,7 @@ public class ApplicationTest {
     void shouldConfirmOrderSuccessfully () {
         OrderRepository repository = new InMemoryRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
-        ConfirmOrderUserCase confirm = new ConfirmOrderUserCase(repository);
+        ConfirmOrderUseCase confirm = new ConfirmOrderUseCase(repository);
 
         Customer customer = new RegularCustomer("1", "Julian");
         Order order = create.execute(customer);

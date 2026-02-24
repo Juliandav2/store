@@ -14,7 +14,7 @@ public class OrderService {
 
     private final CreateOrderUseCase createOrderUseCase;
     private final AddProductOrderUseCase addProductOrderUserCase;
-    private final ConfirmOrderUserCase confirmOrderUserCase;
+    private final ConfirmOrderUseCase confirmOrderUserCase;
     private final PayOrderUserCase payOrderUserCase;
     private final CancelOrderUseCase cancelOrderUserCase;
 
@@ -22,7 +22,7 @@ public class OrderService {
 
         this.createOrderUseCase = new CreateOrderUseCase(repository);
         this.addProductOrderUserCase = new AddProductOrderUseCase(repository);
-        this.confirmOrderUserCase = new ConfirmOrderUserCase(repository);
+        this.confirmOrderUserCase = new ConfirmOrderUseCase(repository);
         this.payOrderUserCase = new PayOrderUserCase(repository);
         this.cancelOrderUserCase = new CancelOrderUseCase(repository);
 

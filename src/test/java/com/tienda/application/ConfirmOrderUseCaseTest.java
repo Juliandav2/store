@@ -13,7 +13,7 @@ public class ConfirmOrderUseCaseTest {
     void shouldThrowWhenOrderDoesNotExist() {
 
         OrderRepository repository = new InMemoryRepository();
-        ConfirmOrderUserCase confirm = new ConfirmOrderUserCase(repository);
+        ConfirmOrderUseCase confirm = new ConfirmOrderUseCase(repository);
 
         assertThrows(NoSuchElementException.class, () ->
                 confirm.execute("non-existent-id")

@@ -2,7 +2,6 @@ package com.tienda.application;
 import com.tienda.exception.OrderNotFoundException;
 import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
-import java.util.NoSuchElementException;
 
 /**
  * Application use case responsible for confirming an Order.
@@ -24,7 +23,7 @@ import java.util.NoSuchElementException;
  * </p>
  */
 
-public class ConfirmOrderUserCase {
+public class ConfirmOrderUseCase {
 
     private final OrderRepository repository;
 
@@ -34,7 +33,7 @@ public class ConfirmOrderUserCase {
      * @param repository repository used to retrieve and persist orders
      */
 
-    public ConfirmOrderUserCase (OrderRepository repository) {
+    public ConfirmOrderUseCase(OrderRepository repository) {
         this.repository = repository;
     }
 
