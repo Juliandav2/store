@@ -3,6 +3,27 @@ import com.tienda.exception.OrderNotFoundException;
 import com.tienda.model.*;
 import com.tienda.repository.OrderRepository;
 
+/**
+ * Application use case responsible for adding
+ * an item to an existing Order.
+ *
+ * <p>
+ * This use case retrieves the Order from the repository,
+ * delegates item addition to the domain entity,
+ * and ensures persistence after modification.
+ * </p>
+ *
+ * <p>
+ * Business validation of order state is enforced
+ * inside the Order aggregate.
+ * </p>
+ *
+ * <p>
+ * Layer: Application
+ * Responsibility: Coordination between domain and repository
+ * </p>
+ */
+
 public class AddProductOrderUserCase {
 
     private final OrderRepository repository;

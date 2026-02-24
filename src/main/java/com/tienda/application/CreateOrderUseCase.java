@@ -5,10 +5,22 @@ import com.tienda.repository.OrderRepository;
 import java.util.UUID;
 
 /**
- * Application use case responsible for creating new orders.
+ * Application use case responsible for creating a new Order.
  *
- * <p>This class orchestrates the creation process and delegates
- * business rule enforcement to the Order entity.</p>
+ * <p>
+ * This use case orchestrates the creation of the Order aggregate
+ * and persists it through the OrderRepository.
+ * </p>
+ *
+ * <p>
+ * It does not contain business rules related to order lifecycle.
+ * Those rules belong to the Order domain entity.
+ * </p>
+ *
+ * <p>
+ * Layer: Application
+ * Responsibility: Orchestration
+ * </p>
  */
 
 public class CreateOrderUseCase {
@@ -18,14 +30,6 @@ public class CreateOrderUseCase {
     public CreateOrderUseCase (OrderRepository repository) {
         this.repository = repository;
     }
-
-    /**
-     * Creates and persists a new order for the given customer.
-     *
-     * @param customer the customer placing the order
-     * @return the newly created Order
-     * @throws IllegalArgumentException if customer is null
-     */
 
     public Order execute (Customer customer) {
 
