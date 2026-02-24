@@ -1,4 +1,4 @@
-package com.tienda.exepcion;
+package com.tienda.exception;
 
 public class OrderNotFoundException extends BusinessException {
 

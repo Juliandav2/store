@@ -1,4 +1,5 @@
 package com.tienda.service;
+import com.tienda.exception.OrderNotFoundException;
 import com.tienda.model.*;
 import com.tienda.repository.InMemoryRepository;
 import com.tienda.repository.OrderRepository;
@@ -58,7 +59,7 @@ class OrderServiceTest {
         OrderService service = new OrderService(new InMemoryRepository());
         Product product = new Product("1", "PC gamer", new BigDecimal(5000000));
 
-        assertThrows(IllegalArgumentException.class, () -> service.addProduct("", product, 1));
+        assertThrows(OrderNotFoundException.class, () -> service.addProduct("", product, 1));
     }
 
     @Test

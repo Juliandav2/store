@@ -1,7 +1,8 @@
 package com.tienda.application;
-import com.tienda.exepcion.OrderNotFoundException;
 import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
+
+import java.util.NoSuchElementException;
 
 public class ConfirmOrderUserCase {
 
@@ -13,7 +14,7 @@ public class ConfirmOrderUserCase {
 
     public void execute (String orderId) {
 
-        Order order = repository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
+        Order order = repository.findById(orderId).orElseThrow(() -> new NoSuchElementException(orderId));
         order.confirm();
     }
 }

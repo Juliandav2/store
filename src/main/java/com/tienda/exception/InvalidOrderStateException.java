@@ -1,4 +1,4 @@
-package com.tienda.exepcion;
+package com.tienda.exception;
 
 /**
  * Thrown when an operation is attempted on an order

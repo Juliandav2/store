@@ -1,6 +1,15 @@
 package com.tienda.model;
 import java.math.BigDecimal;
-import java.util.Objects;
+
+/**
+ * Represents a product available for purchase.
+ *
+ * <p>
+ * A Product contains identity, name and current price.
+ * Price modifications are validated to preserve
+ * domain invariants.
+ * </p>
+ */
 
 public class Product {
 

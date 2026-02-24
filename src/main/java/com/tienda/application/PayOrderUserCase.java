@@ -1,8 +1,7 @@
 package com.tienda.application;
-import com.tienda.exepcion.OrderNotFoundException;
+import com.tienda.exception.OrderNotFoundException;
 import com.tienda.model.Order;
 import com.tienda.repository.OrderRepository;
-import com.tienda.service.OrderService;
 
 public class PayOrderUserCase {
 

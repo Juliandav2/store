@@ -1,4 +1,4 @@
-package com.tienda.exepcion;
+package com.tienda.exception;
 
 /**
  * Thrown when an order operation requires at least one item,

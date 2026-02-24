@@ -1,6 +1,6 @@
 package com.tienda.model;
-import com.tienda.exepcion.EmptyOrderException;
-import com.tienda.exepcion.InvalidOrderStateException;
+import com.tienda.exception.EmptyOrderException;
+import com.tienda.exception.InvalidOrderStateException;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;

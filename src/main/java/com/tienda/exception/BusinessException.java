@@ -1,4 +1,4 @@
-package com.tienda.exepcion;
+package com.tienda.exception;
 
 /**
  * Base exception to all business rule violations within the domain layer.
