@@ -1,16 +1,26 @@
-/**
- * Base exception to all business rule violations within the domain.
- *
- * <p>All custom domain and application exceptions should extend this class
- * to ensure consistent error handling across layers.</p>
- */
-
 package com.tienda.model;
 import com.tienda.exepcion.EmptyOrderException;
 import com.tienda.exepcion.InvalidOrderStateException;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * Represents a customer order in the system.
+ *
+ * <p>An Order follows a defined lifecycle:
+ * CREATED → CONFIRMED → PAID → SENT → DELIVERED or CANCELED.</p>
+ *
+ * <p>Business rules:
+ * <ul>
+ *   <li>Items can only be added in CREATED state.</li>
+ *   <li>An order must contain at least one item to be confirmed.</li>
+ *   <li>An order must be CONFIRMED before being paid.</li>
+ *   <li>Paid or delivered orders cannot be canceled.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>This class enforces all domain invariants related to order state transitions.</p>
+ */
 
 public class Order {
 
@@ -19,12 +29,24 @@ public class Order {
     private final List<ItemOrder> items;
     private OrderState state;
 
+    /**
+     * Creates a new Order in CREATED state.
+     *
+     * @param id unique identifier of the order
+     * @param customer customer who owns the order
+     * @throws NullPointerException if id or customer is null
+     */
+
     public Order (String id, Customer customer) {
 
         this.id = Objects.requireNonNull(id);
         this.customer = Objects.requireNonNull(customer);
         this.items = new ArrayList<>();
         this.state = OrderState.CREATED;
+
+        /**
+         * Represents all possible states of an order.
+         */
 
     }
 
@@ -36,6 +58,15 @@ public class Order {
         DELIVERED,
         CANCELED
     }
+
+    /**
+     * Adds an item to the order.
+     *
+     * <p>Items can only be added while the order is in CREATED state.</p>
+     *
+     * @param item item to be added
+     * @throws InvalidOrderStateException if the order is not in CREATED state
+     */
 
     public void addItem (ItemOrder item) {
 
@@ -87,15 +118,18 @@ public class Order {
     }
 
     /**
-     * Cancels the order unless it has already been paid.
+     * Cancels the order.
      *
-     * @throws InvalidOrderStateException if the order is already PAID or CANCELLED
+     * <p>An order cannot be canceled if it has already been paid,
+     * sent, delivered, or already canceled.</p>
+     *
+     * @throws InvalidOrderStateException if cancellation is not allowed
      */
 
     public void cancel () {
 
         if (state == OrderState.CANCELED) {
-            throw new IllegalStateException("Order is already canceled");
+            throw new InvalidOrderStateException("Cannot cancel order in state " + state );
         }
 
         if (state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED)
@@ -109,28 +143,60 @@ public class Order {
         return state == OrderState.PAID || state == OrderState.SENT;
     }
 
+    /**
+     * Calculates the total price of the order
+     * without applying discounts.
+     *
+     * @return total amount of all order items
+     */
+
     public BigDecimal getTotal () {
         return items.stream().map(ItemOrder::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     }
+
+    /**
+     * Calculates the total price after applying
+     * the customer's discount strategy.
+     *
+     * @return total amount after discount
+     */
 
     public BigDecimal getTotalWithDiscount () {
         return customer.getDiscountStrategy().applyDiscount(getTotal());
 
     }
 
+    /**
+     * @return order unique identifier
+     */
+
     public String getId () {
         return id;
 
     }
 
+    /**
+     * @return current order state
+     */
+
     public Customer getCustomer () {
         return customer;
     }
 
+    /**
+     * @return current order state
+     */
+
     public OrderState getState () {
         return this.state;
     }
+
+    /**
+     * Returns an unmodifiable list of items.
+     *
+     * @return immutable list of order items
+     */
 
     public List<ItemOrder> getItems () {
         return Collections.unmodifiableList(items);
