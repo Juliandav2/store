@@ -2,12 +2,24 @@ package com.tienda.model;
 import java.math.BigDecimal;
 
 /**
- * Represents a product available for purchase.
+ * Represents a product available in the store domain.
  *
  * <p>
- * A Product contains identity, name and current price.
- * Price modifications are validated to preserve
- * domain invariants.
+ * A Product is an aggregate element identified by a unique id,
+ * with a name and a monetary price.
+ * </p>
+ *
+ * <p>
+ * This class enforces basic domain invariants:
+ * <ul>
+ *     <li> id cannot be null or blank</li>
+ *     <li> name cannot be null or blank</li>
+ *     <li> price cannot be null or negative</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Price updates are validated to ensure the domain remains consistent.
  * </p>
  */
 
@@ -56,6 +68,17 @@ public class Product {
         return price;
     }
 
+    /**
+     * Updates the product price.
+     *
+     * @param newPrice the new price to assign
+     * @throws IllegalArgumentException if the price is null or negative
+     */
+
+    public void updatePrice (BigDecimal newPrice) {
+        this.price = validatePrice(newPrice);
+    }
+
     public String getId () {
         return id;
     }
@@ -68,8 +91,6 @@ public class Product {
         return price;
     }
 
-    public void updatePrice (BigDecimal newPrice) {
-        this.price = validatePrice(newPrice);
-    }
+
 
 }
