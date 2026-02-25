@@ -1,8 +1,7 @@
 package com.tienda.controller;
 import com.tienda.dto.CreateOrderRequest;
 import com.tienda.dto.OrderResponse;
-import com.tienda.model.*;
-import com.tienda.repository.InMemoryRepository;
+import com.tienda.repository.InMemoryOrderRepository;
 import com.tienda.service.OrderService;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -12,7 +11,7 @@ public class OrderControllerTest {
 
     @Test
     void shouldCreateOrderThroughController () {
-        InMemoryRepository repository = new InMemoryRepository();
+        InMemoryOrderRepository repository = new InMemoryOrderRepository();
         OrderService service = new OrderService(repository);
         OrderController controller = new OrderController(service);
 

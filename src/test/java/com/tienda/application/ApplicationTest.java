@@ -11,7 +11,7 @@ public class ApplicationTest {
     @Test
     void shouldCreateOrderSuccessfully() {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         CreateOrderUseCase useCase = new CreateOrderUseCase(repository);
 
         Customer customer = new RegularCustomer("1", "Julian");
@@ -26,7 +26,7 @@ public class ApplicationTest {
     @Test
     void shouldAddProductToOrder() {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
         AddProductOrderUseCase add = new AddProductOrderUseCase(repository);
 
@@ -47,7 +47,7 @@ public class ApplicationTest {
     @Test
     void shouldThrowWhenQuantityIsInvalid() {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
         AddProductOrderUseCase add = new AddProductOrderUseCase(repository);
 
@@ -63,7 +63,7 @@ public class ApplicationTest {
 
     @Test
     void shouldConfirmOrderSuccessfully () {
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         CreateOrderUseCase create = new CreateOrderUseCase(repository);
         ConfirmOrderUseCase confirm = new ConfirmOrderUseCase(repository);
 

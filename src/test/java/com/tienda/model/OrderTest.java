@@ -41,7 +41,7 @@ class OrderTest {
         order.confirm();
         order.pay();
 
-        assertThrows(IllegalStateException.class, order::cancel);
+        assertThrows(InvalidOrderStateException.class, order::cancel);
 
     }
 
@@ -77,7 +77,7 @@ class OrderTest {
         order.confirm();
         order.pay();
 
-        assertThrows(IllegalStateException.class, order::cancel);
+        assertThrows(InvalidOrderStateException.class, order::cancel);
     }
 
     @Test
@@ -134,7 +134,7 @@ class OrderTest {
         order.confirm();
         order.pay();
 
-        assertThrows(IllegalStateException.class, order::cancel);
+        assertThrows(InvalidOrderStateException.class, order::cancel);
     }
 
 }

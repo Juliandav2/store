@@ -1,10 +1,10 @@
 package com.tienda.application;
+import com.tienda.exception.OrderNotFoundException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.tienda.repository.*;
 
-import java.util.*;
-import com.tienda.repository.InMemoryRepository;
+import com.tienda.repository.InMemoryOrderRepository;
 
 
 public class ConfirmOrderUseCaseTest {
@@ -12,10 +12,10 @@ public class ConfirmOrderUseCaseTest {
     @Test
     void shouldThrowWhenOrderDoesNotExist() {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         ConfirmOrderUseCase confirm = new ConfirmOrderUseCase(repository);
 
-        assertThrows(NoSuchElementException.class, () ->
+        assertThrows(OrderNotFoundException.class, () ->
                 confirm.execute("non-existent-id")
         );
     }

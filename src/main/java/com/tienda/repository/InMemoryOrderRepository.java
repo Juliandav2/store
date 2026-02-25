@@ -18,7 +18,7 @@ import java.util.Optional;
  * </p>
  */
 
-public class InMemoryRepository implements OrderRepository {
+public class InMemoryOrderRepository implements OrderRepository {
 
     private final Map<String, Order> storage = new HashMap<>();
 
@@ -32,6 +32,13 @@ public class InMemoryRepository implements OrderRepository {
     public void save (Order order) {
         storage.put(order.getId(), order);
     }
+
+    /**
+     * Retrieves an order from memory by its identifier.
+     *
+     * @param id the order identifier
+     * @return an Optional containing the order if found
+     */
 
     @Override
     public Optional<Order> findById (String id) {

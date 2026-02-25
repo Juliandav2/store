@@ -1,7 +1,7 @@
 package com.tienda.service;
 import com.tienda.exception.OrderNotFoundException;
 import com.tienda.model.*;
-import com.tienda.repository.InMemoryRepository;
+import com.tienda.repository.InMemoryOrderRepository;
 import com.tienda.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ class OrderServiceTest {
     @Test
     void shouldCreateConfirmAndPayOrderSuccessfully () {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         OrderService service = new OrderService(repository);
         Customer customer = new RegularCustomer("1", "Julian");
         Product product = new Product("1", "PC gamer", new BigDecimal("5600000"));
@@ -28,7 +28,7 @@ class OrderServiceTest {
     @Test
     void shouldThrowExceptionWhenOrderNotFound () {
 
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         OrderService service = new OrderService(repository);
 
         assertThrows(OrderNotFoundException.class, () -> service.confirm("Invalid - ID"));
@@ -37,7 +37,7 @@ class OrderServiceTest {
 
     @Test
     void shouldThrowExceptionWhenProductIsNull () {
-        OrderService service = new OrderService(new InMemoryRepository());
+        OrderService service = new OrderService(new InMemoryOrderRepository());
         Customer customer = new RegularCustomer("1", "Julian");
         Order order = service.createOrder(customer);
 
@@ -46,7 +46,7 @@ class OrderServiceTest {
 
     @Test
     void shouldThrowExceptionWhenQuantityIsInvalid () {
-        OrderService service = new OrderService(new InMemoryRepository());
+        OrderService service = new OrderService(new InMemoryOrderRepository());
         Customer customer = new RegularCustomer("1", "Julian");
         Product product = new Product("1", "PC Gamer", new BigDecimal(5000000));
         Order order = service.createOrder(customer);
@@ -56,7 +56,7 @@ class OrderServiceTest {
 
     @Test
     void shouldThrowExceptionWhenOrderIdIsInvalid () {
-        OrderService service = new OrderService(new InMemoryRepository());
+        OrderService service = new OrderService(new InMemoryOrderRepository());
         Product product = new Product("1", "PC gamer", new BigDecimal(5000000));
 
         assertThrows(OrderNotFoundException.class, () -> service.addProduct("", product, 1));
@@ -64,7 +64,7 @@ class OrderServiceTest {
 
     @Test
     void shouldNotAddProductWithInvalidQuantity () {
-        OrderRepository repository = new InMemoryRepository();
+        OrderRepository repository = new InMemoryOrderRepository();
         OrderService service = new OrderService(repository);
 
         Customer customer = new RegularCustomer("1", "Julian");
