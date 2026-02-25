@@ -31,7 +31,7 @@ class OrderServiceTest {
         OrderRepository repository = new InMemoryRepository();
         OrderService service = new OrderService(repository);
 
-        assertThrows(java.util.NoSuchElementException.class, () -> service.confirm("Invalid - ID"));
+        assertThrows(OrderNotFoundException.class, () -> service.confirm("Invalid - ID"));
 
     }
 

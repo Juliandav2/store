@@ -53,7 +53,7 @@ public class AddProductOrderUseCase {
     public void execute (String orderId, Product product, int quantity) {
 
         if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("OrderId cannot be null or blank");
+            throw new OrderNotFoundException("OrderId cannot be null or blank");
         }
 
         if (product == null) {

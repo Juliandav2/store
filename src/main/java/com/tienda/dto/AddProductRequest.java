@@ -1,6 +1,32 @@
 package com.tienda.dto;
 import java.math.BigDecimal;
 
+/**
+ * Data Transfer Object used to request the addition of a product to an order.
+ *
+ * <p>
+ * This object carries all necessary data from external layers
+ * (e.g., controllers) into the application layer.
+ * </p>
+ *
+ * <p>
+ * Validation is performed in the constructor to guarantee that
+ * the request contains consistent and non-null values before
+ * reaching the business logic.
+ * </p>
+ *
+ * <p>
+ * Invariants:
+ * <ul>
+ *     <li>Order ID must not be null or blank</li>
+ *     <li>Product ID must not be null or blank</li>
+ *     <li>Product name must not be null or blank</li>
+ *     <li>Price must not be null or negative</li>
+ *     <li>Quantity must be greater than zero</li>
+ * </ul>
+ * </p>
+ */
+
 public class AddProductRequest {
 
     private final String orderId;
@@ -8,6 +34,17 @@ public class AddProductRequest {
     private final String productName;
     private final BigDecimal price;
     private final int quantity;
+
+    /**
+     * Creates a validated request for adding a product to an order.
+     *
+     * @param orderId the identifier of the order
+     * @param productId the identifier of the product
+     * @param productName the name of the product
+     * @param price the unit price of the product
+     * @param quantity the quantity to add
+     * @throws IllegalArgumentException if any parameter violates validation rules
+     */
 
     public AddProductRequest (String orderId, String productId, String productName, BigDecimal price, int quantity) {
 
