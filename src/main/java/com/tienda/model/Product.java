@@ -2,25 +2,20 @@ package com.tienda.model;
 import java.math.BigDecimal;
 
 /**
- * Represents a product available in the store domain.
+ * Represents a product available in the store.
  *
  * <p>
- * A Product is an aggregate element identified by a unique id,
- * with a name and a monetary price.
+ * A Product is identified by a unique id and holds
+ * a name and a monetary price. Price can be updated
+ * after creation following the same validation rules.
  * </p>
  *
- * <p>
- * This class enforces basic domain invariants:
+ * <p>Domain invariants:</p>
  * <ul>
- *     <li> id cannot be null or blank</li>
- *     <li> name cannot be null or blank</li>
- *     <li> price cannot be null or negative</li>
+ *     <li>id cannot be null or blank</li>
+ *     <li>name cannot be null or blank</li>
+ *     <li>price cannot be null or negative</li>
  * </ul>
- * </p>
- *
- * <p>
- * Price updates are validated to ensure the domain remains consistent.
- * </p>
  */
 
 public class Product {
@@ -28,6 +23,16 @@ public class Product {
     private final String id;
     private final String name;
     private BigDecimal price;
+
+    /**
+     * Creates a new Product with the given id, name and price.
+     *
+     * @param id    unique product identifier
+     * @param name  product display name
+     * @param price product price, cannot be negative
+     * @throws IllegalArgumentException if id or name are null or blank,
+     *                                  or if price is null or negative
+     */
 
     public Product (String id, String name, BigDecimal price) {
 
@@ -40,7 +45,7 @@ public class Product {
     private String validateId (String id) {
 
         if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("Product id cannot be null or empty");
+            throw new IllegalArgumentException("Product id cannot be null or blank");
         }
 
         return id;
@@ -49,7 +54,7 @@ public class Product {
     private String validateName (String name) {
 
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Product name cannot be a null or empty");
+            throw new IllegalArgumentException("Product name cannot be null or blank");
         }
 
         return name;
@@ -68,10 +73,11 @@ public class Product {
         return price;
     }
 
+
     /**
      * Updates the product price.
      *
-     * @param newPrice the new price to assign
+     * @param newPrice the new price to assign, cannot be negative
      * @throws IllegalArgumentException if the price is null or negative
      */
 
@@ -79,18 +85,27 @@ public class Product {
         this.price = validatePrice(newPrice);
     }
 
+    /**
+     * @return unique product identifier
+     */
+
     public String getId () {
         return id;
     }
+
+    /**
+     * @return product display name
+     */
 
     public String getName () {
         return name;
     }
 
+    /**
+     * @return current product price
+     */
+
     public BigDecimal getPrice () {
         return price;
     }
-
-
-
 }
