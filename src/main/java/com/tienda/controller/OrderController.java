@@ -1,4 +1,5 @@
 package com.tienda.controller;
+
 import com.tienda.dto.*;
 import com.tienda.mapper.OrderMapper;
 import com.tienda.model.*;
@@ -9,18 +10,18 @@ import com.tienda.service.OrderService;
  *
  * <p>
  * This class acts as the entry point for order workflows.
- * It receives request DTOs, converts them into domain objects,
- * delegates execution to the service layer,
+ * It receives request DTOs, delegates execution to the service layer,
  * and maps domain entities back into response DTOs.
  * </p>
  *
  * <p>
- * In a future Spring migration, this class will become a REST controller.
+ * In a future Spring migration, this class will become a REST controller
+ * annotated with {@code @RestController} and {@code @RequestMapping}.
  * </p>
  *
- * Layer: Interface / Presentation
- * Responsibility: Coordinating requests and responses
+ * <p>Layer: Interface / Presentation — Responsibility: Coordinating requests and responses</p>
  */
+
 public class OrderController {
 
     private final OrderService service;
@@ -29,6 +30,7 @@ public class OrderController {
      * Creates a new instance of the controller.
      *
      * @param service service responsible for order orchestration
+     * @throws NullPointerException if service is null
      */
 
     public OrderController(OrderService service) {
@@ -36,9 +38,9 @@ public class OrderController {
     }
 
     /**
-     * Creates a new order for a regular customer.
+     * Creates a new order based on the given request.
      *
-     * @param request request containing customer information
+     * @param request request containing customer information and type
      * @return response DTO representing the created order
      * @throws IllegalArgumentException if request is null
      */
@@ -48,9 +50,6 @@ public class OrderController {
         if (request == null) {
             throw new IllegalArgumentException("CreateOrderRequest cannot be null");
         }
-
-        Customer customer = new RegularCustomer(request.getCustomerId(), request.getCustomerName()
-        );
 
         Order order = service.createOrder(request);
         return OrderMapper.toResponse(order);
@@ -69,32 +68,37 @@ public class OrderController {
             throw new IllegalArgumentException("AddProductRequest cannot be null");
         }
 
-        Product product = new Product(request.getProductId(), request.getProductName(), request.getPrice()
-
-        );
-
-        service.addProduct(request.getOrderId(), product, request.getQuantity()
-
-        );
+        Product product = new Product(request.getProductId(), request.getProductName(), request.getPrice());
+        service.addProduct(request.getOrderId(), product, request.getQuantity());
     }
 
     /**
      * Confirms an existing order.
      *
      * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
      */
 
     public void confirm(String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be null or blank");
+        }
         service.confirm(orderId);
     }
 
     /**
-     * Processes payment for an order.
+     * Processes payment for an existing order.
      *
      * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
      */
 
     public void pay(String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be null or blank");
+        }
         service.pay(orderId);
     }
 
@@ -102,9 +106,29 @@ public class OrderController {
      * Cancels an existing order.
      *
      * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
      */
 
     public void cancel(String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be null or blank");
+        }
         service.cancel(orderId);
+    }
+
+    /**
+     * Processes a refund for an existing order.
+     *
+     * @param orderId identifier of the order
+     * @throws IllegalArgumentException if orderId is null or blank
+     */
+
+    public void refund (String orderId) {
+
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be null or blank");
+        }
+        service.refund(orderId);
     }
 }
