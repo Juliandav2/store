@@ -151,6 +151,8 @@ public class Order {
         if (!isRefundable()) {
             throw new InvalidOrderStateException("Order is not refundable in state: " + state);
         }
+
+        state = OrderState.CANCELED;
     }
 
     /**

@@ -1,140 +1,130 @@
 package com.tienda.model;
+
 import com.tienda.exception.EmptyOrderException;
 import com.tienda.exception.InvalidOrderStateException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
 
-    @Test
-    void DoNotConfirmAnEmptyOrder () {
+    private Order order;
+    private ItemOrder item;
 
-        Order order = new Order("1", new RegularCustomer("1", "Julian"));
+    @BeforeEach
+    void setUp() {
+        Customer customer = new RegularCustomer("1", "Julian");
+        order = new Order("1", customer);
+
+        Product product = new Product("1", "PC Gamer", new BigDecimal("1000"));
+        item = new ItemOrder(product, 1, product.getPrice());
+    }
+
+    // ─── confirm() ────────────────────────────────────────────
+
+    @Test
+    void shouldThrowWhenConfirmingEmptyOrder() {
         assertThrows(EmptyOrderException.class, order::confirm);
     }
 
     @Test
-    void ConfirmOrderWithItems () {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        Product product = new Product("1", "Pc Gamer", new BigDecimal("700000"));
-        ItemOrder item = new ItemOrder(product, 1, product.getPrice());
-
+    void shouldConfirmOrderWithItems() {
         order.addItem(item);
         order.confirm();
-
-        assertEquals(Order.OrderState.CONFIRMED,order.getState());
-
+        assertEquals(Order.OrderState.CONFIRMED, order.getState());
     }
 
     @Test
-    void DoNotCancelPaidOrder () {
-        Customer customer = new RegularCustomer("1", "Andrea");
-        Order order = new Order("1", customer);
+    void shouldThrowWhenConfirmingAlreadyConfirmedOrder() {
+        order.addItem(item);
+        order.confirm();
+        assertThrows(InvalidOrderStateException.class, order::confirm);
+    }
 
-        Product product = new Product("1", "Mouse", new BigDecimal(60000));
-        ItemOrder item = new ItemOrder(product, 1, product.getPrice());
+    // ─── pay() ────────────────────────────────────────────────
 
+    @Test
+    void shouldPayConfirmedOrder() {
         order.addItem(item);
         order.confirm();
         order.pay();
-
-        assertThrows(InvalidOrderStateException.class, order::cancel);
-
+        assertEquals(Order.OrderState.PAID, order.getState());
     }
 
     @Test
-    void shouldCancelOrderWhenStateIsCreated() {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
+    void shouldThrowWhenPayingUnconfirmedOrder() {
+        order.addItem(item);
+        // Nunca confirmamos → debe lanzar excepción
+        assertThrows(InvalidOrderStateException.class, order::pay);
+    }
 
-        assertDoesNotThrow(order::cancel);
+    // ─── cancel() ─────────────────────────────────────────────
+
+    @Test
+    void shouldCancelOrderInCreatedState() {
+        order.cancel();
         assertEquals(Order.OrderState.CANCELED, order.getState());
     }
 
     @Test
-    void shouldCancelOrderWhenStateIsConfirmed() {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        Product product = new Product("1", "PC", new BigDecimal("1000"));
-        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+    void shouldCancelOrderInConfirmedState() {
+        order.addItem(item);
         order.confirm();
-
-        assertDoesNotThrow(order::cancel);
+        order.cancel();
         assertEquals(Order.OrderState.CANCELED, order.getState());
     }
 
     @Test
-    void shouldThrowExceptionWhenCancelPaidOrder() {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        Product product = new Product("1", "PC", new BigDecimal("1000"));
-        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+    void shouldThrowWhenCancelingPaidOrder() {
+        order.addItem(item);
         order.confirm();
         order.pay();
-
         assertThrows(InvalidOrderStateException.class, order::cancel);
     }
 
-    @Test
-    void shouldReturnTrueWhenOrderIsPaid() {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
+    // ─── refund() ─────────────────────────────────────────────
 
-        Product product = new Product("1", "PC", new BigDecimal("1000"));
-        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+    @Test
+    void shouldRefundPaidOrder() {
+        order.addItem(item);
         order.confirm();
         order.pay();
+        order.refund();
+        assertEquals(Order.OrderState.CANCELED, order.getState());
+    }
 
+    @Test
+    void shouldThrowWhenRefundingCreatedOrder() {
+        assertThrows(InvalidOrderStateException.class, order::refund);
+    }
+
+    @Test
+    void shouldThrowWhenRefundingConfirmedOrder() {
+        order.addItem(item);
+        order.confirm();
+        assertThrows(InvalidOrderStateException.class, order::refund);
+    }
+
+    // ─── isRefundable() ───────────────────────────────────────
+
+    @Test
+    void shouldBeRefundableWhenPaid() {
+        order.addItem(item);
+        order.confirm();
+        order.pay();
         assertTrue(order.isRefundable());
     }
 
     @Test
-    void shouldReturnFalseWhenOrderIsCreated() {
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
+    void shouldNotBeRefundableWhenCreated() {
         assertFalse(order.isRefundable());
     }
 
     @Test
-    void shouldThrowWhenConfirmingEmptyOrder() {
-
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        assertThrows(EmptyOrderException.class, order::confirm);
-    }
-
-    @Test
-    void shouldNotAllowPayIfNotConfirmed() {
-
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        Product product = new Product("1", "Mouse", new BigDecimal("50000"));
-        order.addItem(new ItemOrder(product, 1, product.getPrice()));
-
-        assertThrows(InvalidOrderStateException.class, order::pay);
-    }
-
-    @Test
-    void shouldNotCancelPaidOrder() {
-
-        Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("1", customer);
-
-        Product product = new Product("1", "Mouse", new BigDecimal("50000"));
-        order.addItem(new ItemOrder(product, 1, product.getPrice()));
-
+    void shouldNotBeRefundableWhenConfirmed() {
+        order.addItem(item);
         order.confirm();
-        order.pay();
-
-        assertThrows(InvalidOrderStateException.class, order::cancel);
+        assertFalse(order.isRefundable());
     }
-
 }
