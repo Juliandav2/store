@@ -12,12 +12,9 @@ package com.tienda.exception;
 public class EmptyOrderException extends BusinessException {
 
     /**
-     * Thrown when an order operation requires at least one item,
-     * but the order is empty.
+     * Creates a new EmptyOrderException with a descriptive message.
      *
-     * <p>
-     * Example: confirming an order without items.
-     * </p>
+     * @param message explanation of the business rule violation
      */
 
     public EmptyOrderException (String message) {

@@ -55,7 +55,6 @@ class OrderTest {
     @Test
     void shouldThrowWhenPayingUnconfirmedOrder() {
         order.addItem(item);
-        // Nunca confirmamos → debe lanzar excepción
         assertThrows(InvalidOrderStateException.class, order::pay);
     }
 

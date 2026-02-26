@@ -18,16 +18,10 @@ import java.math.RoundingMode;
 public class PremiumDiscount implements DiscountStrategy {
 
     /**
-     * Discount strategy for premium customers.
+     * Applies a 10% discount to the total.
      *
-     * <p>
-     * Applies a 10% discount to the total purchase amount.
-     * </p>
-     *
-     * <p>
-     * The result is rounded to two decimal places using
-     * {@link RoundingMode#HALF_UP}, ensuring financial precision.
-     * </p>
+     * @param total the original total amount
+     * @return the total after applying a 10% discount
      */
 
     @Override
