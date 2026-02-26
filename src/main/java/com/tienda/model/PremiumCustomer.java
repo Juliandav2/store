@@ -3,12 +3,11 @@ import com.tienda.discount.DiscountStrategy;
 import com.tienda.discount.PremiumDiscount;
 
 /**
- * Represents a product available for purchase.
+ * Represents a premium customer.
  *
  * <p>
- * A Product contains identity, name and current price.
- * Price modifications are validated to preserve
- * domain invariants.
+ * Premium customers receive an exclusive discount
+ * defined by the {@link PremiumDiscount} strategy.
  * </p>
  */
 

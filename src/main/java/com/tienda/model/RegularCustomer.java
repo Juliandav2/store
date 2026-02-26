@@ -3,11 +3,11 @@ import com.tienda.discount.DiscountStrategy;
 import com.tienda.discount.RegularDiscount;
 
 /**
- * Represents a premium customer.
+ * Represents a regular customer.
  *
  * <p>
- * Premium customers receive a special discount
- * defined by PremiumDiscount strategy.
+ * Regular customers receive a standard discount
+ * defined by the {@link RegularDiscount} strategy.
  * </p>
  */
 
