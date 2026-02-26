@@ -1,6 +1,8 @@
 package com.tienda.repository;
+
 import com.tienda.model.Order;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,10 +28,12 @@ public class InMemoryOrderRepository implements OrderRepository {
      * Saves or replaces the given order in memory.
      *
      * @param order the order to store
+     * @throws NullPointerException if order is null
      */
 
     @Override
     public void save (Order order) {
+        Objects.requireNonNull(order, "Order cannot be null");
         storage.put(order.getId(), order);
     }
 
@@ -37,11 +41,27 @@ public class InMemoryOrderRepository implements OrderRepository {
      * Retrieves an order from memory by its identifier.
      *
      * @param id the order identifier
-     * @return an Optional containing the order if found
+     * @return an Optional containing the order if found, or empty if not found
+     * @throws NullPointerException if id is null
      */
 
     @Override
     public Optional<Order> findById (String id) {
+        Objects.requireNonNull(id, "Id cannot be null");
         return Optional.ofNullable(storage.get(id));
     }
+
+    /**
+     * Clears all stored orders from memory.
+     *
+     * <p>
+     * Intended for use in tests to ensure a clean state between executions.
+     * </p>
+     */
+
+    @Override
+    public void deleteAll () {
+        storage.clear();
+    }
+
 }

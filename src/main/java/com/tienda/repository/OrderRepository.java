@@ -22,6 +22,7 @@ public interface OrderRepository {
      * Persists the given order.
      *
      * @param order the order to be saved
+     * @throws NullPointerException if order is null
      */
 
     void save (Order order);
@@ -31,8 +32,18 @@ public interface OrderRepository {
      *
      * @param id the order identifier
      * @return an Optional containing the order if found, or empty if not found
+     * @throws NullPointerException if id is null
      */
 
     Optional<Order> findById (String id);
 
+    /**
+     * Removes all orders from the repository.
+     *
+     * <p>
+     * Intended for use in tests to ensure a clean state between executions.
+     * </p>
+     */
+
+    void deleteAll ();
 }
