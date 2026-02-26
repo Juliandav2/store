@@ -1,18 +1,27 @@
 package com.tienda.model;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Represents an item inside an order.
  *
  * <p>
- * Each item contains product information, quantity,
- * and unit price. The subtotal is derived from these values.
+ * Each item holds a reference to a product, the quantity ordered,
+ * and the unit price at the moment of purchase. The unit price is
+ * captured at order time to avoid price fluctuation issues.
  * </p>
  *
  * <p>
  * This entity is part of the Order aggregate and should not
  * be modified outside the Order root.
  * </p>
+ *
+ * <p>Domain invariants:</p>
+ * <ul>
+ *     <li>product cannot be null</li>
+ *     <li>amount must be greater than zero</li>
+ *     <li>unitPrice cannot be null or negative</li>
+ * </ul>
  */
 
 public class ItemOrder {
@@ -24,28 +33,27 @@ public class ItemOrder {
     /**
      * Creates a new order item.
      *
-     * @param product name of the product
-     * @param unitPrice price per unit
-     * @param amount quantity ordered
+     * @param product   the product being ordered
+     * @param amount    quantity ordered, must be greater than zero
+     * @param unitPrice price per unit at the moment of purchase, cannot be negative
+     * @throws NullPointerException     if product or unitPrice is null
+     * @throws IllegalArgumentException if amount is zero or less, or unitPrice is negative
      */
 
     public ItemOrder (Product product, int amount, BigDecimal unitPrice) {
 
-        if (product == null) {
-            throw new IllegalArgumentException("Product cannot be null");
-        }
+        this.product = Objects.requireNonNull(product, "Product cannot be null");
+        this.unitPrice = Objects.requireNonNull(unitPrice, "Unit price cannot be null");
 
         if (amount <= 0) {
-            throw new IllegalArgumentException("The quantity must be greater than 0");
+            throw new IllegalArgumentException("Amount must be greater than 0");
         }
 
-        if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("The price must be greater than 0");
+        if (unitPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Unit price cannot be negative");
         }
 
-        this.product = product;
         this.amount = amount;
-        this.unitPrice = unitPrice;
 
     }
 
