@@ -116,24 +116,39 @@ public class Order {
     /**
      * Cancels the order.
      *
-     * <p>An order cannot be canceled if it has already been paid,
-     * sent, delivered, or already canceled.</p>
+     * <p>An order can only be canceled if it is in CREATED or CONFIRMED state.</p>
      *
      * @throws InvalidOrderStateException if cancellation is not allowed
      */
 
     public void cancel () {
 
-        if (state == OrderState.CANCELED || state == OrderState.PAID || state == OrderState.SENT || state == OrderState.DELIVERED) {
-            throw new InvalidOrderStateException("Cannot cancel order in state " + state);
+        if (state != OrderState.CREATED && state != OrderState.CONFIRMED) {
+            throw new InvalidOrderStateException("Cannot cancel order in state: " + state);
         }
 
         state = OrderState.CANCELED;
 
     }
 
+
+
     public boolean isRefundable () {
         return state == OrderState.PAID || state == OrderState.SENT;
+    }
+
+    /**
+     * Requests a refund for the order.
+     *
+     * <p>A refund can only be requested if the order has been paid or is already sent.</p>
+     *
+     * @throws InvalidOrderStateException if the order is not in a refundable state
+     */
+
+    public void refund () {
+        if (!isRefundable()) {
+            throw new InvalidOrderStateException("Order is not refundable in state: " + state);
+        }
     }
 
     /**
