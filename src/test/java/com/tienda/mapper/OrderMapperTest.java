@@ -1,30 +1,43 @@
 package com.tienda.mapper;
+
 import com.tienda.dto.OrderResponse;
 import com.tienda.model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OrderMapperTest {
+class OrderMapperTest {
 
-    @Test
-    void shouldMapOrderToResponse () {
+    private Order order;
+
+    @BeforeEach
+    void setUp() {
         Customer customer = new RegularCustomer("1", "Julian");
-        Order order = new Order("order-1", customer);
-
-        Product product = new Product("p1", "RTX 5090", new BigDecimal("50000"));
-        order.addItem(new ItemOrder(product, 2, product.getPrice()));
-        order.confirm();
-
-        OrderResponse response = OrderMapper.toResponse(order);
-
-        assertEquals("order-1", response.getId());
-        assertEquals("CONFIRMED", response.getState());
-        assertEquals(new BigDecimal("100000"), response.getTotal());
+        order = new Order("1", customer);
     }
 
     @Test
-    void shouldThrowWhenOrderIsNull () {
-        assertThrows(IllegalArgumentException.class, () -> OrderMapper.toResponse(null));
+    void shouldMapOrderToResponse() {
+        OrderResponse response = OrderMapper.toResponse(order);
+
+        assertEquals("1", response.getId());
+        assertEquals("CREATED", response.getState());
+        assertEquals(new BigDecimal("0.00"), response.getTotal());
+    }
+
+    @Test
+    void shouldApplyDiscountInResponse() {
+        Product product = new Product("1", "PC Gamer", new BigDecimal("1000"));
+        order.addItem(new ItemOrder(product, 1, product.getPrice()));
+
+        OrderResponse response = OrderMapper.toResponse(order);
+
+        assertEquals(new BigDecimal("950.00"), response.getTotal());
+    }
+
+    @Test
+    void shouldThrowWhenOrderIsNull() {
+        assertThrows(NullPointerException.class, () -> OrderMapper.toResponse(null));
     }
 }

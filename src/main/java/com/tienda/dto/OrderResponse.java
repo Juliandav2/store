@@ -10,14 +10,12 @@ import java.math.BigDecimal;
  * without leaking internal domain entities.
  * </p>
  *
- * <p>
- * It contains a snapshot of:
+ * <p>It contains a snapshot of:</p>
  * <ul>
  *     <li>Order identifier</li>
  *     <li>Current order state</li>
- *     <li>Total amount</li>
+ *     <li>Total amount after discount</li>
  * </ul>
- * </p>
  */
 
 public class OrderResponse {
@@ -29,11 +27,11 @@ public class OrderResponse {
     /**
      * Creates an immutable representation of an order response.
      *
-     * @param id the order identifier
+     * @param id    the order identifier
      * @param state the current state of the order
-     * @param total the total monetary amount of the order
+     * @param total the total monetary amount after discount
+     * @throws IllegalArgumentException if any parameter is null, blank, or invalid
      */
-
 
     public OrderResponse (String id, String state, BigDecimal total) {
 
@@ -42,7 +40,7 @@ public class OrderResponse {
         }
 
         if (state == null || state.isBlank()) {
-            throw new IllegalStateException("State cannot be null or blank");
+            throw new IllegalArgumentException("State cannot be null or blank");
         }
 
         if (total == null) {
@@ -55,13 +53,25 @@ public class OrderResponse {
 
     }
 
+    /**
+     * @return order unique identifier
+     */
+
     public String getId () {
         return id;
     }
 
+    /**
+     * @return current order state as string
+     */
+
     public String getState () {
         return state;
     }
+
+    /**
+     * @return total amount after discount applied
+     */
 
     public BigDecimal getTotal () {
         return total;
