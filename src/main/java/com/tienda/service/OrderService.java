@@ -1,6 +1,9 @@
 package com.tienda.service;
+
 import com.tienda.application.*;
-import com.tienda.model.*;
+import com.tienda.dto.CreateOrderRequest;
+import com.tienda.model.Order;
+import com.tienda.model.Product;
 import com.tienda.repository.OrderRepository;
 
 /**
@@ -12,8 +15,12 @@ import com.tienda.repository.OrderRepository;
  * to application use cases.
  * </p>
  *
- * Layer: Application Facade
- * Responsibility: Delegation and coordination
+ * <p>
+ * Each method maps directly to a single use case,
+ * keeping this class free of business logic.
+ * </p>
+ *
+ * <p>Layer: Application Facade — Responsibility: Delegation and coordination</p>
  */
 
 public class OrderService {
@@ -23,12 +30,17 @@ public class OrderService {
     private final ConfirmOrderUseCase confirmOrderUseCase;
     private final PayOrderUseCase payOrderUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
+    private final RefundOrderUseCase refundOrderUseCase;
 
     /**
-     * Creates a new instance of the service
-     * initializing all required use cases.
+     * Creates a new instance of the service with all required use cases.
      *
-     * @param repository repository used by the use cases
+     * <p>
+     * Each use case is injected independently to allow easy replacement
+     * and testing. This constructor is ready for Spring dependency injection.
+     * </p>
+     *
+     * @param repository repository shared by all use cases
      */
 
     public OrderService (OrderRepository repository) {
@@ -38,18 +50,19 @@ public class OrderService {
         this.confirmOrderUseCase = new ConfirmOrderUseCase(repository);
         this.payOrderUseCase = new PayOrderUseCase(repository);
         this.cancelOrderUseCase = new CancelOrderUseCase(repository);
+        this.refundOrderUseCase = new RefundOrderUseCase(repository);
 
     }
 
     /**
-     * Creates a new order for the given customer.
+     * Creates a new order based on the given request.
      *
-     * @param customer customer who owns the order
-     * @return created order
+     * @param request data required to create the order
+     * @return the newly created Order
      */
 
-    public Order createOrder (Customer customer) {
-        return createOrderUseCase.execute(customer);
+    public Order createOrder (CreateOrderRequest request) {
+        return createOrderUseCase.execute(request);
     }
 
     /**
@@ -75,7 +88,7 @@ public class OrderService {
     }
 
     /**
-     * Processes payment for an order.
+     * Processes payment for an existing order.
      *
      * @param orderId identifier of the order
      */
@@ -92,6 +105,16 @@ public class OrderService {
 
     public void cancel (String orderId) {
         cancelOrderUseCase.execute(orderId);
+    }
+
+    /**
+     * Processes a refund for an existing order.
+     *
+     * @param orderId identifier of the order
+     */
+
+    public void refund (String orderId) {
+        refundOrderUseCase.execute(orderId);
     }
 }
 

@@ -1,6 +1,7 @@
 package com.tienda.application;
-import com.tienda.model.Customer;
-import com.tienda.model.Order;
+
+import com.tienda.dto.CreateOrderRequest;
+import com.tienda.model.*;
 import com.tienda.repository.OrderRepository;
 import java.util.UUID;
 
@@ -8,19 +9,15 @@ import java.util.UUID;
  * Application use case responsible for creating a new Order.
  *
  * <p>
- * This use case orchestrates the creation of the Order aggregate
- * and persists it through the OrderRepository.
+ * This use case builds the customer from the request data,
+ * creates the Order aggregate and persists it through the repository.
  * </p>
  *
  * <p>
- * It does not contain business rules related to order lifecycle.
- * Those rules belong to the Order domain entity.
+ * Supported customer types: REGULAR, PREMIUM.
  * </p>
  *
- * <p>
- * Layer: Application
- * Responsibility: Orchestration
- * </p>
+ * <p>Layer: Application — Responsibility: Orchestration</p>
  */
 
 public class CreateOrderUseCase {
@@ -38,32 +35,43 @@ public class CreateOrderUseCase {
     }
 
     /**
-     * Creates and persists a new Order for the given customer.
+     * Creates and persists a new Order from the given request.
      *
-     * @param customer customer who owns the order
+     * @param request data required to create the order
      * @return the newly created Order
-     * @throws IllegalArgumentException if customer is null
+     * @throws IllegalArgumentException if request is null or customerType is invalid
      */
 
-    public Order execute (Customer customer) {
+    public Order execute (CreateOrderRequest request) {
 
-        if (customer == null) {
-            throw new IllegalArgumentException("Customer cannot be null");
+        if (request == null) {
+            throw new IllegalArgumentException("Request cannot be null");
         }
 
-        Order order = new Order(UUID.randomUUID().toString(), customer);
+        Customer customer = buildCustomer(request);
+        Order order = new Order(generateId(), customer);
         repository.save(order);
-
         return order;
     }
 
     /**
-     * Generates a unique identifier for the order.
+     * Builds the appropriate Customer subtype based on the request.
      *
-     * <p>
-     * Extracted into a separate method to isolate ID generation
-     * responsibility and improve testability.
-     * </p>
+     * @param request the creation request containing customer data
+     * @return a RegularCustomer or PremiumCustomer instance
+     * @throws IllegalArgumentException if customerType is not recognized
+     */
+
+    private Customer buildCustomer (CreateOrderRequest request) {
+        return switch (request.getCustomerType().toUpperCase()) {
+            case "REGULAR" -> new RegularCustomer(request.getCustomerId(), request.getCustomerName());
+            case "PREMIUM" -> new PremiumCustomer(request.getCustomerId(), request.getCustomerName());
+            default -> throw new IllegalArgumentException("Unknow customer type: " + request.getCustomerType() + ". Expected REGULAR or PREMIUM");
+        };
+    }
+
+    /**
+     * Generates a unique identifier for the order.
      *
      * @return unique order identifier
      */

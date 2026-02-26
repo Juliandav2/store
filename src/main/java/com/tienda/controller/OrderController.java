@@ -42,6 +42,7 @@ public class OrderController {
      * @return response DTO representing the created order
      * @throws IllegalArgumentException if request is null
      */
+
     public OrderResponse createOrder(CreateOrderRequest request) {
 
         if (request == null) {
@@ -51,7 +52,7 @@ public class OrderController {
         Customer customer = new RegularCustomer(request.getCustomerId(), request.getCustomerName()
         );
 
-        Order order = service.createOrder(customer);
+        Order order = service.createOrder(request);
         return OrderMapper.toResponse(order);
     }
 
