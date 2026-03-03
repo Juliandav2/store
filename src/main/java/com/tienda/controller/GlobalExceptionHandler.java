@@ -62,6 +62,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        if (ex.getClass().getName().startsWith("org.springframework")) {
+            throw new RuntimeException(ex);
+        }
         return buildResponse(500, "Internal Server Error", "An unexpected error occurred");
     }
 
