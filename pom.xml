@@ -30,6 +30,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Swagger / OpenAPI — documenta los endpoints automáticamente -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
         <!-- Spring Boot Test — incluye JUnit 5 automáticamente -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
