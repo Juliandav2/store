@@ -4,33 +4,31 @@ import com.tienda.dto.*;
 import com.tienda.mapper.OrderMapper;
 import com.tienda.model.*;
 import com.tienda.service.OrderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * Controller responsible for handling order-related operations.
+ * REST controller responsible for handling order-related HTTP requests.
  *
  * <p>
- * This class acts as the entry point for order workflows.
- * It receives request DTOs, delegates execution to the service layer,
- * and maps domain entities back into response DTOs.
+ * Exposes order operations as REST endpoints.
+ * Delegates all business logic to {@link OrderService}.
  * </p>
  *
- * <p>
- * In a future Spring migration, this class will become a REST controller
- * annotated with {@code @RestController} and {@code @RequestMapping}.
- * </p>
- *
- * <p>Layer: Interface / Presentation — Responsibility: Coordinating requests and responses</p>
+ * <p>Layer: Interface / Presentation</p>
  */
 
+@RestController
+@RequestMapping ("/orders")
 public class OrderController {
 
     private final OrderService service;
 
     /**
-     * Creates a new instance of the controller.
+     * Spring injects OrderService automatically via constructor injection.
      *
      * @param service service responsible for order orchestration
-     * @throws NullPointerException if service is null
      */
 
     public OrderController(OrderService service) {
@@ -38,97 +36,93 @@ public class OrderController {
     }
 
     /**
-     * Creates a new order based on the given request.
+     * Creates a new order
      *
-     * @param request request containing customer information and type
-     * @return response DTO representing the created order
-     * @throws IllegalArgumentException if request is null
+     * POST /orders
+     *
+     * @param request request body with customer data
+     * @return 201 CREATED with the order response
      */
 
-    public OrderResponse createOrder(CreateOrderRequest request) {
-
-        if (request == null) {
-            throw new IllegalArgumentException("CreateOrderRequest cannot be null");
-        }
-
+    @PostMapping
+    public ResponseEntity <OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
         Order order = service.createOrder(request);
-        return OrderMapper.toResponse(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(OrderMapper.toResponse(order));
+
     }
 
     /**
      * Adds a product to an existing order.
      *
-     * @param request request containing product and order information
-     * @throws IllegalArgumentException if request is null
+     * POST /orders/products
+     *
+     * @param request request body with product and order data
+     * @return 200 OK
      */
 
-    public void addProduct(AddProductRequest request) {
-
-        if (request == null) {
-            throw new IllegalArgumentException("AddProductRequest cannot be null");
-        }
-
-        Product product = new Product(request.getProductId(), request.getProductName(), request.getPrice());
-        service.addProduct(request.getOrderId(), product, request.getQuantity());
+    @PostMapping("/products")
+    public ResponseEntity<Void> addProduct (@RequestBody AddProductRequest request) {
+        service.addProduct(request.getOrderId(),new Product(request.getProductId(), request.getProductName(), request.getPrice()),request.getQuantity());
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Confirms an existing order.
      *
-     * @param orderId identifier of the order
-     * @throws IllegalArgumentException if orderId is null or blank
+     * PATCH /orders/{orderId}/confirm
+     *
+     * @param orderId path variable with order identifier
+     * @return 200 OK
      */
 
-    public void confirm(String orderId) {
-
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID cannot be null or blank");
-        }
+    @PatchMapping("/{orderId}/confirm")
+    public ResponseEntity<Void> confirm (@PathVariable String orderId) {
         service.confirm(orderId);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Processes payment for an existing order.
      *
-     * @param orderId identifier of the order
-     * @throws IllegalArgumentException if orderId is null or blank
+     * PATCH /orders/{orderId}/pay
+     *
+     * @param orderId path variable with order identifier
+     * @return 200 OK
      */
 
-    public void pay(String orderId) {
-
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID cannot be null or blank");
-        }
+    @PatchMapping("/{orderId}/pay")
+    public ResponseEntity<Void> pay (@PathVariable String orderId) {
         service.pay(orderId);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Cancels an existing order.
      *
-     * @param orderId identifier of the order
-     * @throws IllegalArgumentException if orderId is null or blank
+     * PATCH /orders/{orderId}/cancel
+     *
+     * @param orderId path variable with order identifier
+     * @return 200 OK
      */
 
-    public void cancel(String orderId) {
-
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID cannot be null or blank");
-        }
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<Void> cancel (@PathVariable String orderId) {
         service.cancel(orderId);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Processes a refund for an existing order.
      *
-     * @param orderId identifier of the order
-     * @throws IllegalArgumentException if orderId is null or blank
+     * PATCH /orders/{orderId}/refund
+     *
+     * @param orderId path variable with order identifier
+     * @return 200 OK
      */
 
-    public void refund (String orderId) {
-
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID cannot be null or blank");
-        }
+    @PatchMapping("/{orderId}/refund")
+    public ResponseEntity<Void> refund (@PathVariable String orderId) {
         service.refund(orderId);
+        return ResponseEntity.ok().build();
     }
 }
