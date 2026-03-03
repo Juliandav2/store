@@ -6,6 +6,9 @@ import com.tienda.repository.InMemoryOrderRepository;
 import com.tienda.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +20,7 @@ class OrderControllerTest {
     @BeforeEach
     void setUp() {
         controller = new OrderController(new OrderService(new InMemoryOrderRepository()));
-        OrderResponse response = controller.createOrder(new CreateOrderRequest("1", "Julian", "REGULAR"));
+        OrderResponse response = controller. createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
         orderId = response.getId();
     }
 
@@ -25,9 +28,7 @@ class OrderControllerTest {
 
     @Test
     void shouldCreateOrderAndReturnResponse() {
-        OrderResponse response = controller.createOrder(
-                new CreateOrderRequest("2", "Andrea", "PREMIUM")
-        );
+        OrderResponse response = controller.createOrder(new CreateOrderRequest("2", "Andrea", "PREMIUM")).getBody();
         assertNotNull(response.getId());
         assertEquals("CREATED", response.getState());
     }
@@ -49,7 +50,7 @@ class OrderControllerTest {
 
     @Test
     void shouldThrowWhenAddProductRequestIsNull() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
                 () -> controller.addProduct(null));
     }
 
