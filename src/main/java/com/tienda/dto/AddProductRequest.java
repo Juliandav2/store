@@ -1,4 +1,7 @@
 package com.tienda.dto;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 /**
@@ -46,7 +49,8 @@ public class AddProductRequest {
      * @throws IllegalArgumentException if any parameter violates validation rules
      */
 
-    public AddProductRequest (String orderId, String productId, String productName, BigDecimal price, int quantity) {
+    @JsonCreator
+    public AddProductRequest (@JsonProperty String orderId,@JsonProperty String productId,@JsonProperty String productName,@JsonProperty BigDecimal price,@JsonProperty int quantity) {
 
         if (orderId == null || orderId.isBlank()) {
             throw new IllegalArgumentException("Order ID cannot be null or empty");

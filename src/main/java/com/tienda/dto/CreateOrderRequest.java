@@ -1,5 +1,8 @@
 package com.tienda.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Data Transfer Object used to request the creation of a new order.
  *
@@ -29,7 +32,8 @@ public class CreateOrderRequest {
      * @throws IllegalArgumentException if any value is null or blank
      */
 
-    public CreateOrderRequest (String customerId, String customerName, String customerType) {
+    @JsonCreator
+    public CreateOrderRequest (@JsonProperty String customerId, @JsonProperty String customerName,@JsonProperty String customerType) {
 
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalArgumentException("Customer ID cannot be null or empty");
