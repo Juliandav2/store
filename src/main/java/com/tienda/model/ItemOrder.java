@@ -1,4 +1,7 @@
 package com.tienda.model;
+
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -24,11 +27,29 @@ import java.util.Objects;
  * </ul>
  */
 
+@Entity
+@Table (name = "order_items")
 public class ItemOrder {
 
-    private final Product product;
-    private final int amount;
-    private final BigDecimal unitPrice;
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "product_id", nullable = false)
+    private Product product;
+
+    @Column (nullable = false)
+    private int amount;
+
+    @Column (name = "unit_price", nullable = false, precision = 19, scale = 2)
+    private BigDecimal unitPrice;
+
+    /**
+     * No-args constructor required by JPA.
+     */
+
+    protected ItemOrder () {}
 
     /**
      * Creates a new order item.

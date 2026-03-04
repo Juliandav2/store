@@ -1,4 +1,9 @@
 package com.tienda.model;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.math.BigDecimal;
 
 /**
@@ -6,8 +11,7 @@ import java.math.BigDecimal;
  *
  * <p>
  * A Product is identified by a unique id and holds
- * a name and a monetary price. Price can be updated
- * after creation following the same validation rules.
+ * a name and a monetary price.
  * </p>
  *
  * <p>Domain invariants:</p>
@@ -18,11 +22,25 @@ import java.math.BigDecimal;
  * </ul>
  */
 
+@Entity
+@Table (name = "products")
 public class Product {
 
-    private final String id;
-    private final String name;
+    @Id
+    @Column (nullable = false)
+    private String id;
+
+    @Column (nullable = false)
+    private String name;
+
+    @Column (nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
+
+    /**
+     * No-args constructor required by JPA.
+     */
+
+    protected Product () {}
 
     /**
      * Creates a new Product with the given id, name and price.

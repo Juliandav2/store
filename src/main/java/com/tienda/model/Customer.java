@@ -1,5 +1,7 @@
 package com.tienda.model;
+
 import com.tienda.discount.DiscountStrategy;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 /**
@@ -11,20 +13,38 @@ import java.util.Objects;
  * </p>
  *
  * <p>
- * This class is part of the domain layer and should remain
- * independent of any persistence or framework annotations.
+ * Uses SINGLE_TABLE inheritance strategy — all customer types
+ * are stored in the same table with a discriminator column.
  * </p>
  */
 
+@Entity
+@Table (name = "customers")
+@Inheritance (strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn (name = "type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Customer {
 
+    @Id
+    @Column (nullable = false)
     protected final String id;
+
+    @Column (nullable = false)
     protected final String name;
+
+    /**
+     * No-args constructor required by JPA.
+     * Should not be used directly.
+     */
+
+    protected Customer () {
+        this.id = null;
+        this.name = null;
+    }
 
     /**
      * Creates a new customer.
      *
-     * @param id unique customer identifier
+     * @param id   unique customer identifier
      * @param name customer name
      */
 

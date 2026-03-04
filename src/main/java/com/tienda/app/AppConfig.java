@@ -1,8 +1,13 @@
 package com.tienda.app;
 
 import com.tienda.repository.InMemoryOrderRepository;
+import com.tienda.repository.JpaOrderRepository;
+import com.tienda.repository.JpaOrderRepositoryAdapter;
 import com.tienda.repository.OrderRepository;
 import com.tienda.service.OrderService;
+import jakarta.validation.Valid;
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,24 +16,36 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>
  * Defines the beans that Spring will manage.
- * When we migrate to JPA, InMemoryOrderRepository
- * will be replaced here without touching any other class.
  * </p>
  */
 
 @Configuration
 public class AppConfig {
 
+    @Value("${spring.datasource.url}")
+    private String datasourceUrl;
+
+    @Value("${spring.datasource.username}")
+    private String datasourceUsername;
+
+    @Value("${spring.datasource.password}")
+    private String datasourcePassword;
+
     /**
-     * Registers OrderRepository as a Spring bean.
-     * Currently, uses in-memory implementation.
-     *
-     * @return InMemoryOrderRepository instance
+     * Configures and runs Flyway migrations manually.
      */
 
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(datasourceUrl, datasourceUsername, datasourcePassword)
+                .locations("classpath:db/migration")
+                .load();
+    }
+
     @Bean
-    public OrderRepository orderRepository () {
-        return new InMemoryOrderRepository();
+    public OrderRepository orderRepository (JpaOrderRepository jpa) {
+        return new JpaOrderRepositoryAdapter(jpa);
     }
 
     /**

@@ -1,6 +1,9 @@
 package com.tienda.model;
+import com.tienda.controller.OrderController;
 import com.tienda.exception.EmptyOrderException;
 import com.tienda.exception.InvalidOrderStateException;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -26,12 +29,31 @@ import java.util.*;
  * </ul>
  */
 
+@Entity
+@Table (name = "orders")
 public class Order {
 
-    private final String id;
-    private final Customer customer;
-    private final List<ItemOrder> items;
+    @Id
+    @Column (nullable = false)
+    private String id;
+
+    @ManyToOne (fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn (name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn (name = "order_id")
+    private List<ItemOrder> items = new ArrayList<>();
+
+    @Enumerated (EnumType.STRING)
+    @Column (nullable = false)
     private OrderState state;
+
+    /**
+     * No-args constructor required by JPA.
+     */
+
+    protected Order () {}
 
     /**
      * Defines the possible states of an order lifecycle.
