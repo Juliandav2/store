@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Handles all domain exceptions extending BusinessException.
      *
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException ex) {
+        log.warn("Business exception: {}", ex.getMessage());
         if (ex instanceof OrderNotFoundException) {
             return buildResponse(404, "Not Found", ex.getMessage());
         }
@@ -57,6 +60,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Illegal argument: {}", ex.getMessage());
         return buildResponse(400, "Bad Request", ex.getMessage());
     }
 
@@ -69,6 +73,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception e) {
+        log.error("Unhandled exception: {}", e.getMessage(), e);
         Map<String, Object> error = new java.util.HashMap<>();
         error.put("timestamp", java.time.LocalDateTime.now().toString());
         error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -86,6 +91,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity with structured error map
      */
     private ResponseEntity<Map<String, Object>> buildResponse(int status, String error, String message) {
+        log.debug("Building error response: status={}, error={}, message={}", status, error, message);
         Map<String, Object> body = Map.of(
                 "timestamp", LocalDateTime.now().toString(),
                 "status", status,
@@ -97,6 +103,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler (org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation (MethodArgumentNotValidException e) {
+        log.warn("Validation failed: {}", e.getMessage());
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", 400);
         errors.put("error", "Validation failed");

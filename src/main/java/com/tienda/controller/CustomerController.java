@@ -18,6 +18,7 @@ import java.util.UUID;
 @RequestMapping ("/customers")
 public class CustomerController {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CustomerController.class);
     private final JpaCustomerRepository customerRepository;
 
     public CustomerController (JpaCustomerRepository customerRepository) {
@@ -26,16 +27,21 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity <org.springframework.data.domain.Page<CustomerResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
+        log.info("GET /customers - page={}, size={}", page, size);
         return ResponseEntity.ok(customerRepository.findAll(PageRequest.of(page, size)).map(CustomerResponse::new));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity <CustomerResponse> getById (@PathVariable String id) {
-        return customerRepository.findById(id).map(CustomerResponse::new).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        log.info("GET /customers/{}", id);
+        return customerRepository.findById(id).map(CustomerResponse::new).map(ResponseEntity::ok).orElseGet(() -> {log.warn("Customer not found: {}", id);
+            return ResponseEntity.notFound().build();
+        });
     }
 
     @PostMapping
     public ResponseEntity <CustomerResponse> create (@Valid @RequestBody CreateCustomerRequest request) {
+        log.info("POST /customers - name={}, type={}", request.getName(), request.getType());
         String id = UUID.randomUUID().toString();
         Customer customer = switch (request.getType().toUpperCase()) {
             case "PREMIUM" -> new PremiumCustomer(id, request.getName());
@@ -43,12 +49,16 @@ public class CustomerController {
             default -> throw new IllegalArgumentException("Invalid type: " + request.getType());
         };
 
-        return ResponseEntity.status(201).body(new CustomerResponse(customerRepository.save(customer)));
+        CustomerResponse response = new CustomerResponse(customerRepository.save(customer));
+        log.info("Customer created: {}", response.getId());
+        return ResponseEntity.status(201).body(response);
     }
 
     @DeleteMapping ("/{id}")
     public ResponseEntity <Void> delete (@PathVariable String id) {
+        log.info("DELETE /customers/{}", id);
         if (!customerRepository.existsById(id)) {
+            log.warn("Customer not found for delete: {}", id);
             return ResponseEntity.notFound().build();
         }
 
