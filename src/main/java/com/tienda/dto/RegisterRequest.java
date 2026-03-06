@@ -6,11 +6,13 @@ public class RegisterRequest  {
 
     private final String username;
     private final String password;
+    private final String role;
 
     @JsonCreator
-    public RegisterRequest (@JsonProperty ("username") String username, @JsonProperty ("password") String password) {
+    public RegisterRequest (@JsonProperty ("username") String username, @JsonProperty ("password") String password, @JsonProperty ("role") String role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     public String getUsername () {
@@ -19,6 +21,10 @@ public class RegisterRequest  {
 
     public String getPassword () {
         return password;
+    }
+
+    public String getRole () {
+        return role;
     }
 
 }
