@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
      * @param ex the business exception thrown
      * @return structured error response
      */
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException ex) {
         if (ex instanceof OrderNotFoundException) {
