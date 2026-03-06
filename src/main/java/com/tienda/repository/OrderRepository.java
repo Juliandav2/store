@@ -1,5 +1,7 @@
 package com.tienda.repository;
 import com.tienda.model.Order;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,4 +48,7 @@ public interface OrderRepository {
      */
 
     void deleteAll ();
+
+    List<Order> findAll ();
+
 }

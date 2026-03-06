@@ -37,11 +37,11 @@ public class Order {
     @Column (nullable = false)
     private String id;
 
-    @ManyToOne (fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne (fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn (name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn (name = "order_id")
     private List<ItemOrder> items = new ArrayList<>();
 

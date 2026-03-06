@@ -1,7 +1,8 @@
 package com.tienda.repository;
 
 import com.tienda.model.Order;
-import org.springframework.stereotype.Component;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -60,4 +61,10 @@ public class JpaOrderRepositoryAdapter implements OrderRepository {
     public void deleteAll () {
         jpa.deleteAll();
     }
+
+    @Override
+    public List<Order> findAll() {
+        return jpa.findAll();
+    }
+
 }

@@ -6,6 +6,8 @@ import com.tienda.model.Order;
 import com.tienda.model.Product;
 import com.tienda.repository.OrderRepository;
 
+import java.util.List;
+
 /**
  * Facade service that coordinates order-related use cases.
  *
@@ -25,6 +27,7 @@ import com.tienda.repository.OrderRepository;
 
 public class OrderService {
 
+    private final OrderRepository orderRepository;
     private final CreateOrderUseCase createOrderUseCase;
     private final AddProductOrderUseCase addProductOrderUseCase;
     private final ConfirmOrderUseCase confirmOrderUseCase;
@@ -45,6 +48,7 @@ public class OrderService {
 
     public OrderService (OrderRepository repository) {
 
+        this.orderRepository = repository;
         this.createOrderUseCase = new CreateOrderUseCase(repository);
         this.addProductOrderUseCase = new AddProductOrderUseCase(repository);
         this.confirmOrderUseCase = new ConfirmOrderUseCase(repository);
@@ -115,6 +119,10 @@ public class OrderService {
 
     public void refund (String orderId) {
         refundOrderUseCase.execute(orderId);
+    }
+
+    public List <Order> getOrders () {
+        return orderRepository.findAll();
     }
 }
 

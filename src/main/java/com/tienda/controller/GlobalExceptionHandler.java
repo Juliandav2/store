@@ -1,6 +1,7 @@
 package com.tienda.controller;
 
 import com.tienda.exception.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,15 +58,18 @@ public class GlobalExceptionHandler {
     /**
      * Handles any unexpected exception → 500 INTERNAL SERVER ERROR
      *
-     * @param ex the exception thrown
+     * @param e the exception thrown
      * @return structured error response
      */
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        if (ex.getClass().getName().startsWith("org.springframework")) {
-            throw new RuntimeException(ex);
-        }
-        return buildResponse(500, "Internal Server Error", "An unexpected error occurred");
+    public ResponseEntity<Map<String, Object>> handleGeneric(Exception e) {
+        Map<String, Object> error = new java.util.HashMap<>();
+        error.put("timestamp", java.time.LocalDateTime.now().toString());
+        error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.put("error", "Internal Server Error");
+        error.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     /**

@@ -7,6 +7,8 @@ import com.tienda.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.tienda.service.OrderService;
+import java.util.List;
 
 /**
  * REST controller responsible for handling order-related HTTP requests.
@@ -124,5 +126,10 @@ public class OrderController {
     public ResponseEntity<Void> refund (@PathVariable String orderId) {
         service.refund(orderId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity <List<Order>> getOrders () {
+        return ResponseEntity.ok(service.getOrders());
     }
 }

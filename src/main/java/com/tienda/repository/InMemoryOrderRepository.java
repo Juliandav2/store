@@ -1,10 +1,8 @@
 package com.tienda.repository;
 
 import com.tienda.model.Order;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 
 /**
  * In-memory implementation of {@link OrderRepository}.
@@ -64,4 +62,8 @@ public class InMemoryOrderRepository implements OrderRepository {
         storage.clear();
     }
 
+    @Override
+    public List<Order> findAll() {
+        return new java.util.ArrayList<>(storage.values());
+    }
 }
