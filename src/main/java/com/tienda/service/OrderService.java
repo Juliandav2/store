@@ -121,8 +121,8 @@ public class OrderService {
         refundOrderUseCase.execute(orderId);
     }
 
-    public List <Order> getOrders () {
-        return orderRepository.findAll();
+    public org.springframework.data.domain.Page<Order> getOrders (int page, int size) {
+        return orderRepository.findAll(org.springframework.data.domain.PageRequest.of(page, size));
     }
 }
 

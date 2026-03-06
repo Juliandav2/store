@@ -63,8 +63,8 @@ public class JpaOrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAll() {
-        return jpa.findAll();
+    public org.springframework.data.domain.Page<Order> findAll(org.springframework.data.domain.Pageable pageable) {
+        return jpa.findAll(pageable);
     }
 
 }

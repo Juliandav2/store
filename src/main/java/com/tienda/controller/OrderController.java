@@ -129,7 +129,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Order>> getOrders () {
-        return ResponseEntity.ok(service.getOrders());
+    public ResponseEntity <org.springframework.data.domain.Page<Order>> getOrders (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getOrders(page, size));
     }
 }

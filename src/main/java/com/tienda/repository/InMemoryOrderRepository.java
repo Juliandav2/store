@@ -63,7 +63,9 @@ public class InMemoryOrderRepository implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAll() {
-        return new java.util.ArrayList<>(storage.values());
+    public org.springframework.data.domain.Page<Order> findAll(
+            org.springframework.data.domain.Pageable pageable) {
+        return new org.springframework.data.domain.PageImpl<>(
+                new java.util.ArrayList<>(storage.values()));
     }
 }

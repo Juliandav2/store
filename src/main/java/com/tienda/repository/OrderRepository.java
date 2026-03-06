@@ -49,6 +49,6 @@ public interface OrderRepository {
 
     void deleteAll ();
 
-    List<Order> findAll ();
+    org.springframework.data.domain.Page<Order> findAll (org.springframework.data.domain.Pageable pageable);
 
 }

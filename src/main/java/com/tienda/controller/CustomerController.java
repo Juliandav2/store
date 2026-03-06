@@ -7,10 +7,11 @@ import com.tienda.model.PremiumCustomer;
 import com.tienda.model.RegularCustomer;
 import com.tienda.repository.JpaCustomerRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 import java.util.UUID;
 
 @RestController
@@ -24,8 +25,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity <List<CustomerResponse>> getAll () {
-        return ResponseEntity.ok(customerRepository.findAll().stream().map(CustomerResponse::new).toList());
+    public ResponseEntity <org.springframework.data.domain.Page<CustomerResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
+        return ResponseEntity.ok(customerRepository.findAll(PageRequest.of(page, size)).map(CustomerResponse::new));
     }
 
     @GetMapping("/{id}")

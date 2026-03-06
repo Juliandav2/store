@@ -5,6 +5,8 @@ import com.tienda.dto.ProductResponse;
 import com.tienda.model.Product;
 import com.tienda.repository.JpaProductRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +24,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity <List<ProductResponse>> getAll () {
-        return ResponseEntity.ok(productRepository.findAll().stream().map(ProductResponse::new).toList());
+    public ResponseEntity<org.springframework.data.domain.Page<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
+        return ResponseEntity.ok(productRepository.findAll(PageRequest.of(page, size)).map(ProductResponse::new));
     }
 
     @GetMapping ("/{id}")
