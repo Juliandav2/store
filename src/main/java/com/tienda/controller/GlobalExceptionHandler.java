@@ -3,11 +3,15 @@ package com.tienda.controller;
 import com.tienda.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Global exception handler for the REST layer.
@@ -88,5 +92,16 @@ public class GlobalExceptionHandler {
                 "message", message
         );
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler (org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidation (MethodArgumentNotValidException e) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("status", 400);
+        errors.put("error", "Validation failed");
+        errors.put("timestamp", LocalDateTime.now().toString());
+        errors.put("fields", e.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+        return ResponseEntity.status(400).body(errors);
+
     }
 }

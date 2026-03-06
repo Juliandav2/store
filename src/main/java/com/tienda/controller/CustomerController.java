@@ -1,14 +1,16 @@
 package com.tienda.controller;
 
+import com.tienda.dto.CreateCustomerRequest;
+import com.tienda.dto.CustomerResponse;
 import com.tienda.model.Customer;
 import com.tienda.model.PremiumCustomer;
 import com.tienda.model.RegularCustomer;
 import com.tienda.repository.JpaCustomerRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,28 +24,25 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Customer>> getAll () {
-        return ResponseEntity.ok(customerRepository.findAll());
+    public ResponseEntity <List<CustomerResponse>> getAll () {
+        return ResponseEntity.ok(customerRepository.findAll().stream().map(CustomerResponse::new).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <Customer> getById (@PathVariable String id) {
-        return customerRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity <CustomerResponse> getById (@PathVariable String id) {
+        return customerRepository.findById(id).map(CustomerResponse::new).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity <Customer> create (@RequestBody Map<String, String> body) {
-        String type = body.get("type");
+    public ResponseEntity <CustomerResponse> create (@Valid @RequestBody CreateCustomerRequest request) {
         String id = UUID.randomUUID().toString();
-        String name = body.get("name");
-
-        Customer customer = switch (type.toUpperCase()) {
-            case "PREMIUM" -> new PremiumCustomer(id, name);
-            case "REGULAR" -> new RegularCustomer(id, name);
-            default -> throw new IllegalArgumentException("Invalid customer type: " + type);
+        Customer customer = switch (request.getType().toUpperCase()) {
+            case "PREMIUM" -> new PremiumCustomer(id, request.getName());
+            case "REGULAR" -> new RegularCustomer(id, request.getName());
+            default -> throw new IllegalArgumentException("Invalid type: " + request.getType());
         };
 
-        return ResponseEntity.status(201).body(customerRepository.save(customer));
+        return ResponseEntity.status(201).body(new CustomerResponse(customerRepository.save(customer)));
     }
 
     @DeleteMapping ("/{id}")

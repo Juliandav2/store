@@ -1,14 +1,14 @@
 package com.tienda.controller;
 
+import com.tienda.dto.CreateProductRequest;
+import com.tienda.dto.ProductResponse;
 import com.tienda.model.Product;
 import com.tienda.repository.JpaProductRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,25 +22,26 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Product>> getAll () {
-        return ResponseEntity.ok(productRepository.findAll());
+    public ResponseEntity <List<ProductResponse>> getAll () {
+        return ResponseEntity.ok(productRepository.findAll().stream().map(ProductResponse::new).toList());
     }
 
     @GetMapping ("/{id}")
-    public ResponseEntity <Product> getById (@PathVariable String id) {
-        return productRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity <ProductResponse> getById (@PathVariable String id) {
+        return productRepository.findById(id).map(ProductResponse::new).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-     @PostMapping
-    public ResponseEntity<Product> create (@RequestBody Map<String, String> body) {
-        Product product = new Product(UUID.randomUUID().toString(), body.get("name"), new BigDecimal(body.get("price")));
-        return ResponseEntity.status(201).body(productRepository.save(product));
+    @PostMapping
+    public ResponseEntity<ProductResponse> create (@Valid @RequestBody CreateProductRequest request) {
+        Product product = new Product(UUID.randomUUID().toString(), request.getName(), request.getPrice());
+        return ResponseEntity.status(201).body(new ProductResponse(productRepository.save(product)));
     }
 
     @PutMapping ("/{id}/price")
-    public ResponseEntity <Product> updatePrice (@PathVariable String id, @RequestBody Map <String, String> body) {
-        return productRepository.findById(id).map(product -> {product.updatePrice(new BigDecimal(body.get("price")));
-            return ResponseEntity.ok(productRepository.save(product));}).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity <ProductResponse> updatePrice (@PathVariable String id, @Valid @RequestBody CreateProductRequest request) {
+        return productRepository.findById(id).map(product -> {product.updatePrice(request.getPrice());
+            return ResponseEntity.ok(new ProductResponse(productRepository.save(product)));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping ("/{id}")
