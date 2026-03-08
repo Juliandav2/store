@@ -90,6 +90,7 @@ public class GlobalExceptionHandler {
      * @param message error description
      * @return ResponseEntity with structured error map
      */
+
     private ResponseEntity<Map<String, Object>> buildResponse(int status, String error, String message) {
         log.debug("Building error response: status={}, error={}, message={}", status, error, message);
         Map<String, Object> body = Map.of(

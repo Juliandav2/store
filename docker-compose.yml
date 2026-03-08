@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16
+    container_name: tienda-db
+    environment:
+      POSTGRES_DB: tienda
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "S432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: tienda-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/tienda
+      DB_USERNAME: admin
+      DB_PASSWORD: admin123
+      JWT_SECRET: miClaveSecretaSuperSeguraParaJWT1234567890ABCDEFGHIJ
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      - db
+
+  volumes:
+    postgres_data
