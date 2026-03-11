@@ -51,4 +51,7 @@ public interface OrderRepository {
 
     org.springframework.data.domain.Page<Order> findAll (org.springframework.data.domain.Pageable pageable);
 
+    org.springframework.data.domain.Page<Order> findAll (org.springframework.data.jpa.domain.Specification<Order> specification,
+                                                         org.springframework.data.domain.Pageable pageable);
+
 }

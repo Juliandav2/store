@@ -1,8 +1,8 @@
 package com.tienda.repository;
 
 import com.tienda.model.Order;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * JPA implementation of {@link OrderRepository}.
@@ -19,5 +19,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </p>
  */
 
-public interface JpaOrderRepository extends JpaRepository <Order, String> {
-}
+public interface JpaOrderRepository extends JpaRepository <Order, String>, JpaSpecificationExecutor<Order> {}

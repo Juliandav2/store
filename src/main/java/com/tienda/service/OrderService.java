@@ -124,5 +124,13 @@ public class OrderService {
     public org.springframework.data.domain.Page<Order> getOrders (int page, int size) {
         return orderRepository.findAll(org.springframework.data.domain.PageRequest.of(page, size));
     }
+
+    public org.springframework.data.domain.Page<Order> getOrders (
+            int page, int size, String state, String customerId) {
+        org.springframework.data.jpa.domain.Specification<Order> specification = org.springframework.data.jpa.domain.Specification
+                .where(com.tienda.repository.OrderSpecification.hasState(state))
+                .and(com.tienda.repository.OrderSpecification.hasCustomerId(customerId));
+        return orderRepository.findAll(specification, org.springframework.data.domain.PageRequest.of(page, size));
+    }
 }
 

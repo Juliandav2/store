@@ -7,8 +7,7 @@ import com.tienda.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.tienda.service.OrderService;
-import java.util.List;
+
 
 /**
  * REST controller responsible for handling order-related HTTP requests.
@@ -26,6 +25,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService service;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OrderController.class);
 
     /**
      * Spring injects OrderService automatically via constructor injection.
@@ -129,7 +129,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity <org.springframework.data.domain.Page<Order>> getOrders (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
-        return ResponseEntity.ok(service.getOrders(page, size));
+    public ResponseEntity <org.springframework.data.domain.Page<Order>> getOrders (
+            @RequestParam (defaultValue = "0") int page,
+            @RequestParam (defaultValue = "10") int size,
+            @RequestParam (required = false) String state,
+            @RequestParam (required = false) String customerId) {
+        log.info("GET /orders - page={}, size={}, state={}, customerId={}",
+                page, size, state, customerId);
+        return ResponseEntity.ok(service.getOrders(page, size, state, customerId));
     }
 }
