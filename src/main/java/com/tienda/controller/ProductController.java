@@ -4,11 +4,16 @@ import com.tienda.dto.CreateProductRequest;
 import com.tienda.dto.ProductResponse;
 import com.tienda.model.Product;
 import com.tienda.repository.JpaProductRepository;
+import com.tienda.repository.ProductSpecification;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -23,9 +28,20 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<org.springframework.data.domain.Page<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
-        log.info("GET /products - pages={}, size={}", page, size);
-        return ResponseEntity.ok(productRepository.findAll(PageRequest.of(page, size)).map(ProductResponse::new));
+    public ResponseEntity<Page<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page,
+                                                         @RequestParam (defaultValue = "10") int size,
+                                                         @RequestParam (required = false) String name,
+                                                         @RequestParam (required = false) BigDecimal minPrice,
+                                                         @RequestParam (required = false) BigDecimal maxPrice) {
+
+        log.info("GET /products - pages={}, size={}, name={}, minPrice={}, maxPrice={}", page, size, name, minPrice, maxPrice);
+
+        Specification<Product> specification = Specification
+                .where(ProductSpecification.hasName(name))
+                .and(ProductSpecification.hasMinPrice(minPrice))
+                .and(ProductSpecification.hasMaxPrice(maxPrice));
+
+        return ResponseEntity.ok(productRepository.findAll(specification, PageRequest.of(page, size)).map(ProductResponse::new));
     }
 
     @GetMapping ("/{id}")
