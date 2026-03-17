@@ -1,10 +1,13 @@
 package com.tienda.controller;
 
 import com.tienda.dto.AuthResponse;
+import com.tienda.dto.RefreshTokenRequest;
 import com.tienda.dto.RegisterRequest;
+import com.tienda.model.RefreshToken;
 import com.tienda.model.User;
 import com.tienda.repository.JpaUserRepository;
 import com.tienda.security.JwtService;
+import com.tienda.security.RefreshTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,12 +23,15 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.refreshTokenService = refreshTokenService;
+
     }
 
     @PostMapping ("/register")
@@ -34,9 +40,10 @@ public class AuthController {
         String role = request.getRole() != null ? request.getRole().toUpperCase() : "USER";
         User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()), role);
         userRepository.save(user);
-        String token = jwtService.generateToken(user.getUsername());
+        String accessToken = jwtService.generateToken(user.getUsername());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getUsername());
         log.info("User registered: {}", user.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken()));
     }
 
 
@@ -44,9 +51,27 @@ public class AuthController {
     public ResponseEntity <AuthResponse> login (@RequestBody RegisterRequest request) {
         log.info("POST /auth/login - username={}", request.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        String token = jwtService.generateToken(request.getUsername());
+        String accessToken = jwtService.generateToken(request.getUsername());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(request.getUsername());
         log.info("User logged in: {}", request.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh (@RequestBody RefreshTokenRequest request) {
+        log.info("POST /auth/refresh");
+        RefreshToken refreshToken = refreshTokenService.validateRefreshToken(request.getRefreshToken());
+        String accessToken = jwtService.generateToken(refreshToken.getUsername());
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(refreshToken.getUsername());
+        refreshTokenService.revokeRefreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(new AuthResponse(accessToken, newRefreshToken.getToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout (@RequestBody RefreshTokenRequest request) {
+        log.info("POST /auth/logout");
+        refreshTokenService.revokeAllUserTokens(refreshTokenService.validateRefreshToken(request.getRefreshToken()).getUsername());
+        return ResponseEntity.noContent().build();
     }
 
 }
