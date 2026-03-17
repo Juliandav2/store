@@ -39,6 +39,10 @@ public class ItemOrder {
     @JoinColumn (name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "order_id", nullable = false)
+    private Order order;
+
     @Column (nullable = false)
     private int amount;
 
@@ -111,4 +115,8 @@ public class ItemOrder {
     public BigDecimal getUnitPrice () {
         return unitPrice;
     }
- }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+}

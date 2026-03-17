@@ -2,8 +2,11 @@ package com.tienda.service;
 
 import com.tienda.application.*;
 import com.tienda.dto.CreateOrderRequest;
+import com.tienda.dto.OrderHistoryResponse;
 import com.tienda.model.Order;
+import com.tienda.model.OrderHistory;
 import com.tienda.model.Product;
+import com.tienda.repository.JpaOrderHistoryRepository;
 import com.tienda.repository.OrderRepository;
 
 import java.util.List;
@@ -34,6 +37,7 @@ public class OrderService {
     private final PayOrderUseCase payOrderUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
     private final RefundOrderUseCase refundOrderUseCase;
+    private final JpaOrderHistoryRepository orderHistoryRepository;
 
     /**
      * Creates a new instance of the service with all required use cases.
@@ -46,8 +50,9 @@ public class OrderService {
      * @param repository repository shared by all use cases
      */
 
-    public OrderService (OrderRepository repository) {
+    public OrderService (OrderRepository repository, JpaOrderHistoryRepository orderHistoryRepository) {
 
+        this.orderHistoryRepository = orderHistoryRepository;
         this.orderRepository = repository;
         this.createOrderUseCase = new CreateOrderUseCase(repository);
         this.addProductOrderUseCase = new AddProductOrderUseCase(repository);
@@ -66,7 +71,9 @@ public class OrderService {
      */
 
     public Order createOrder (CreateOrderRequest request) {
-        return createOrderUseCase.execute(request);
+        Order order = createOrderUseCase.execute(request);
+        orderHistoryRepository.save(new OrderHistory(order.getId(), "CREATED"));
+        return order;
     }
 
     /**
@@ -89,6 +96,7 @@ public class OrderService {
 
     public void confirm (String orderId) {
         confirmOrderUseCase.execute(orderId);
+        orderHistoryRepository.save(new OrderHistory(orderId, "CONFIRMED"));
     }
 
     /**
@@ -99,6 +107,7 @@ public class OrderService {
 
     public void pay (String orderId) {
         payOrderUseCase.execute(orderId);
+        orderHistoryRepository.save(new OrderHistory(orderId, "PAID"));
     }
 
     /**
@@ -109,6 +118,7 @@ public class OrderService {
 
     public void cancel (String orderId) {
         cancelOrderUseCase.execute(orderId);
+        orderHistoryRepository.save(new OrderHistory(orderId, "CANCELLED"));
     }
 
     /**
@@ -119,6 +129,7 @@ public class OrderService {
 
     public void refund (String orderId) {
         refundOrderUseCase.execute(orderId);
+        orderHistoryRepository.save(new OrderHistory(orderId, "REFUNDED"));
     }
 
     public org.springframework.data.domain.Page<Order> getOrders (int page, int size) {
@@ -131,6 +142,10 @@ public class OrderService {
                 .where(com.tienda.repository.OrderSpecification.hasState(state))
                 .and(com.tienda.repository.OrderSpecification.hasCustomerId(customerId));
         return orderRepository.findAll(specification, org.springframework.data.domain.PageRequest.of(page, size));
+    }
+
+    public List<OrderHistoryResponse> getOrderHistory (String orderId) {
+        return orderHistoryRepository.findByOrderIdOrderByChangedAtAsc(orderId).stream().map(OrderHistoryResponse::new).toList();
     }
 }
 

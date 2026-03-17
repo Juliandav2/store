@@ -4,9 +4,12 @@ import com.tienda.dto.*;
 import com.tienda.mapper.OrderMapper;
 import com.tienda.model.*;
 import com.tienda.service.OrderService;
+import org.apache.catalina.LifecycleState;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -137,5 +140,11 @@ public class OrderController {
         log.info("GET /orders - page={}, size={}, state={}, customerId={}",
                 page, size, state, customerId);
         return ResponseEntity.ok(service.getOrders(page, size, state, customerId));
+    }
+
+    @GetMapping("/{orderId}/history")
+    public ResponseEntity<List<OrderHistoryResponse>> getHistory (@PathVariable String orderId) {
+        log.info("GET /orders/{}/history", orderId);
+        return ResponseEntity.ok(service.getOrderHistory(orderId));
     }
 }

@@ -101,6 +101,7 @@ public class Order {
             throw new InvalidOrderStateException("Items can only be added in CREATED state, current state: " + state);
         }
 
+        item.setOrder(this);
         items.add(item);
     }
 
