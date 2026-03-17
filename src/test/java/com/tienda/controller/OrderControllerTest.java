@@ -3,9 +3,11 @@ package com.tienda.controller;
 import com.tienda.dto.*;
 import com.tienda.exception.OrderNotFoundException;
 import com.tienda.repository.InMemoryOrderRepository;
+import com.tienda.repository.JpaOrderHistoryRepository;
 import com.tienda.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 
 import java.math.BigDecimal;
@@ -13,12 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderControllerTest {
 
+    @Mock
+    private JpaOrderHistoryRepository orderHistoryRepository;
     private OrderController controller;
     private String orderId;
 
     @BeforeEach
     void setUp() {
-        controller = new OrderController(new OrderService(new InMemoryOrderRepository()));
+        controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository));
         OrderResponse response = controller. createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
         orderId = response.getId();
     }

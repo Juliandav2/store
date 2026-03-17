@@ -4,13 +4,18 @@ import com.tienda.dto.*;
 import com.tienda.exception.*;
 import com.tienda.model.*;
 import com.tienda.repository.InMemoryOrderRepository;
+import com.tienda.repository.JpaOrderHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderServiceTest {
 
+    @Mock
+    private JpaOrderHistoryRepository orderHistoryRepository;
     private OrderService service;
     private InMemoryOrderRepository repository;
     private Product product;
@@ -18,7 +23,7 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryOrderRepository();
-        service = new OrderService(repository);
+        service = new OrderService(repository, orderHistoryRepository);
         product = new Product("p1", "PC Gamer", new BigDecimal("1000"));
     }
 

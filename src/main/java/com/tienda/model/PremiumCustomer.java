@@ -32,7 +32,6 @@ public class PremiumCustomer extends Customer {
 
     public PremiumCustomer (String id, String name) {
         super(id, name);
-
     }
 
     @Override
