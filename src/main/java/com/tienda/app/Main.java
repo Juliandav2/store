@@ -3,6 +3,7 @@ package com.tienda;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Entry point of the Store application.
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableCaching
+@EnableAsync
 public class Main {
     public static void main(String[] args) {
         SpringApplication.run(Main.class,args);

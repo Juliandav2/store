@@ -3,11 +3,13 @@ package com.tienda.controller;
 import com.tienda.dto.*;
 import com.tienda.mapper.OrderMapper;
 import com.tienda.model.*;
+import com.tienda.service.EmailService;
 import com.tienda.service.OrderService;
-import org.apache.catalina.LifecycleState;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class OrderController {
 
     private final OrderService service;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OrderController.class);
+    private final EmailService emailService;
 
     /**
      * Spring injects OrderService automatically via constructor injection.
@@ -36,8 +39,9 @@ public class OrderController {
      * @param service service responsible for order orchestration
      */
 
-    public OrderController(OrderService service) {
+    public OrderController(OrderService service, EmailService emailService) {
         this.service = service;
+        this.emailService = emailService;
     }
 
     /**
@@ -83,6 +87,8 @@ public class OrderController {
     @PatchMapping("/{orderId}/confirm")
     public ResponseEntity<Void> confirm (@PathVariable String orderId) {
         service.confirm(orderId);
+        log.info("Sending email to: {}", getCurrentUsername());
+        emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "CONFIRMED");
         return ResponseEntity.ok().build();
     }
 
@@ -98,6 +104,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/pay")
     public ResponseEntity<Void> pay (@PathVariable String orderId) {
         service.pay(orderId);
+        emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "PAID");
         return ResponseEntity.ok().build();
     }
 
@@ -113,6 +120,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancel (@PathVariable String orderId) {
         service.cancel(orderId);
+        emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "CANCELLED");
         return ResponseEntity.ok().build();
     }
 
@@ -146,5 +154,10 @@ public class OrderController {
     public ResponseEntity<List<OrderHistoryResponse>> getHistory (@PathVariable String orderId) {
         log.info("GET /orders/{}/history", orderId);
         return ResponseEntity.ok(service.getOrderHistory(orderId));
+    }
+
+    private String getCurrentUsername () {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

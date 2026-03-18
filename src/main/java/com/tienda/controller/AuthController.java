@@ -8,6 +8,7 @@ import com.tienda.model.User;
 import com.tienda.repository.JpaUserRepository;
 import com.tienda.security.JwtService;
 import com.tienda.security.RefreshTokenService;
+import com.tienda.service.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,13 +25,15 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final EmailService emailService;
 
-    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
+    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.refreshTokenService = refreshTokenService;
+        this.emailService = emailService;
 
     }
 
@@ -42,6 +45,7 @@ public class AuthController {
         userRepository.save(user);
         String accessToken = jwtService.generateToken(user.getUsername());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getUsername());
+        emailService.sendWelcomeEmail(request.getUsername(), request.getUsername());
         log.info("User registered: {}", user.getUsername());
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken()));
     }

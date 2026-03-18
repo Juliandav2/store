@@ -4,6 +4,7 @@ import com.tienda.dto.*;
 import com.tienda.exception.OrderNotFoundException;
 import com.tienda.repository.InMemoryOrderRepository;
 import com.tienda.repository.JpaOrderHistoryRepository;
+import com.tienda.service.EmailService;
 import com.tienda.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,11 @@ class OrderControllerTest {
     private JpaOrderHistoryRepository orderHistoryRepository;
     private OrderController controller;
     private String orderId;
+    private EmailService emailService;
 
     @BeforeEach
     void setUp() {
-        controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository));
+        controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository),emailService);
         OrderResponse response = controller. createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
         orderId = response.getId();
     }
