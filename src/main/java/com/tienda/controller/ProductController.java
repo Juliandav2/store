@@ -4,44 +4,40 @@ import com.tienda.dto.CreateProductRequest;
 import com.tienda.dto.ProductResponse;
 import com.tienda.model.Product;
 import com.tienda.repository.JpaProductRepository;
-import com.tienda.repository.ProductSpecification;
+import com.tienda.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping ("/products")
 public class ProductController {
 
-    private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProductController.class);
+    private final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final JpaProductRepository productRepository;
+    private final ProductService productService;
 
-    public ProductController (JpaProductRepository productRepository) {
+    public ProductController (JpaProductRepository productRepository, ProductService productService) {
         this.productRepository = productRepository;
+        this.productService = productService;
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page,
+    public ResponseEntity<List<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page,
                                                          @RequestParam (defaultValue = "10") int size,
                                                          @RequestParam (required = false) String name,
                                                          @RequestParam (required = false) BigDecimal minPrice,
                                                          @RequestParam (required = false) BigDecimal maxPrice) {
 
         log.info("GET /products - pages={}, size={}, name={}, minPrice={}, maxPrice={}", page, size, name, minPrice, maxPrice);
-
-        Specification<Product> specification = Specification
-                .where(ProductSpecification.hasName(name))
-                .and(ProductSpecification.hasMinPrice(minPrice))
-                .and(ProductSpecification.hasMaxPrice(maxPrice));
-
-        return ResponseEntity.ok(productRepository.findAll(specification, PageRequest.of(page, size)).map(ProductResponse::new));
+        return ResponseEntity.ok(productService.getAll(page, size, name, minPrice, maxPrice));
     }
 
     @GetMapping ("/{id}")
@@ -57,6 +53,7 @@ public class ProductController {
         log.info("POST /products - name={}", request.getName());
         Product product = new Product(UUID.randomUUID().toString(), request.getName(), request.getPrice());
         ProductResponse response = new ProductResponse(productRepository.save(product));
+        productService.evictCache();
         log.info("Product created: {}", response.getId());
         return ResponseEntity.status(201).body(response);
     }
@@ -64,7 +61,9 @@ public class ProductController {
     @PutMapping ("/{id}/price")
     public ResponseEntity <ProductResponse> updatePrice (@PathVariable String id, @Valid @RequestBody CreateProductRequest request) {
         log.info("PUT /products/{}/price - price={}", id, request.getPrice());
+
         return productRepository.findById(id).map(product -> {product.updatePrice(request.getPrice());
+            productService.evictCache();
             return ResponseEntity.ok(new ProductResponse(productRepository.save(product)));
         }).orElseGet(() -> {log.warn("Product not found for update: {}", id);
             return ResponseEntity.notFound().build();
@@ -80,6 +79,7 @@ public class ProductController {
         }
 
         productRepository.deleteById(id);
+        productService.evictCache();
         return ResponseEntity.noContent().build();
     }
 }

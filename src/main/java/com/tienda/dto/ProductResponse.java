@@ -1,9 +1,11 @@
 package com.tienda.dto;
 
 import com.tienda.model.Product;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ProductResponse {
+public class ProductResponse implements Serializable {
 
     private final String id;
     private final String name;
