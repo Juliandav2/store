@@ -29,6 +29,7 @@ jobs:
         image: redis:7
         ports:
           - 6379:6379
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,9 +48,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Give mvnw permission
-        run: chmod +x mvnw
-
       - name: Run tests
         env:
           DB_URL: jdbc:postgresql://localhost:5432/tienda
@@ -61,7 +59,5 @@ jobs:
           MAIL_PASSWORD: testpassword
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-        run: ./mvnw test
-
-
+        run: mvn test
 
