@@ -104,7 +104,11 @@ public class OrderController {
     @PatchMapping("/{orderId}/pay")
     public ResponseEntity<Void> pay (@PathVariable String orderId) {
         service.pay(orderId);
-        emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "PAID");
+        try {
+            emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "PAID");
+        } catch (Exception e) {
+            log.warn("Could not send email: {}", e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -120,7 +124,11 @@ public class OrderController {
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancel (@PathVariable String orderId) {
         service.cancel(orderId);
-        emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "CANCELLED");
+        try {
+            emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "CANCELLED");
+        } catch (Exception e) {
+            log.warn("Could not send email: {}", e.getMessage());
+        };
         return ResponseEntity.ok().build();
     }
 
@@ -135,7 +143,13 @@ public class OrderController {
 
     @PatchMapping("/{orderId}/refund")
     public ResponseEntity<Void> refund (@PathVariable String orderId) {
+        try {
+            emailService.sendOrderStatusEmail(getCurrentUsername(), orderId, "CONFIRMED");
+        } catch (Exception e) {
+            log.warn("Could not send email: {}", e.getMessage());
+        }
         service.refund(orderId);
+
         return ResponseEntity.ok().build();
     }
 
