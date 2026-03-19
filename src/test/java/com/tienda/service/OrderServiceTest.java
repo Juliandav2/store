@@ -1,5 +1,6 @@
 package com.tienda.service;
 
+import com.tienda.FakeOrderHistoryRepository;
 import com.tienda.dto.*;
 import com.tienda.exception.*;
 import com.tienda.model.*;
@@ -23,7 +24,7 @@ class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        orderHistoryRepository = Mockito.mock(JpaOrderHistoryRepository.class);
+        orderHistoryRepository = new FakeOrderHistoryRepository();
         repository = new InMemoryOrderRepository();
         service = new OrderService(repository, orderHistoryRepository);
         product = new Product("p1", "PC Gamer", new BigDecimal("1000"));

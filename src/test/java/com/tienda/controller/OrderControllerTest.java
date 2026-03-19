@@ -1,5 +1,6 @@
 package com.tienda.controller;
 
+import com.tienda.FakeOrderHistoryRepository;
 import com.tienda.dto.*;
 import com.tienda.exception.OrderNotFoundException;
 import com.tienda.repository.InMemoryOrderRepository;
@@ -22,7 +23,7 @@ class OrderControllerTest {
 
     @BeforeEach
     void setUp() {
-        orderHistoryRepository = Mockito.mock(JpaOrderHistoryRepository.class);
+        orderHistoryRepository = new FakeOrderHistoryRepository();
         emailService = Mockito.mock(EmailService.class);
         controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository),emailService);
         OrderResponse response = controller.createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
