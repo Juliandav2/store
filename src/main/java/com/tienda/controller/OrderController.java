@@ -170,8 +170,12 @@ public class OrderController {
         return ResponseEntity.ok(service.getOrderHistory(orderId));
     }
 
-    private String getCurrentUsername () {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+    private String getCurrentUsername() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            return auth != null ? auth.getName() : "anonymous";
+        } catch (Exception e) {
+            return "anonymous";
+        }
     }
 }
