@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-lastest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tienda
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup_java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: action/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run tests
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/tienda
+          DB_USERNAME: admin
+          DB_PASSWORD: admin123
+          JWT_SECRET: miClaveSecretaSuperSeguraParaJWT1234567890ABCDEFGHIJ
+          JWT_EXPIRATION: 86400000
+          MAIL_USERNAME: test@gmail.com
+          MAIL_PASSWORD: testpassword
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+        run: ./mvnw test
+
+
+
