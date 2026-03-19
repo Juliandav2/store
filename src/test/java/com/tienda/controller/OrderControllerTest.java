@@ -23,8 +23,9 @@ class OrderControllerTest {
     @BeforeEach
     void setUp() {
         orderHistoryRepository = Mockito.mock(JpaOrderHistoryRepository.class);
+        emailService = Mockito.mock(EmailService.class);
         controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository),emailService);
-        OrderResponse response = controller. createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
+        OrderResponse response = controller.createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
         orderId = response.getId();
     }
 
