@@ -8,20 +8,13 @@ import com.tienda.service.EmailService;
 import com.tienda.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
 
-@ExtendWith(MockitoExtension.class)
 class OrderControllerTest {
 
-    @Mock
     private JpaOrderHistoryRepository orderHistoryRepository;
     private OrderController controller;
     private String orderId;
@@ -29,10 +22,10 @@ class OrderControllerTest {
 
     @BeforeEach
     void setUp() {
+        orderHistoryRepository = Mockito.mock(JpaOrderHistoryRepository.class);
         controller = new OrderController(new OrderService(new InMemoryOrderRepository(), orderHistoryRepository),emailService);
         OrderResponse response = controller. createOrder(new  CreateOrderRequest("1", "Julian", "REGULAR")).getBody();
         orderId = response.getId();
-        lenient().doNothing().when(orderHistoryRepository).save(any());
     }
 
     // ─── createOrder() ────────────────────────────────────────
