@@ -7,11 +7,16 @@ import com.tienda.repository.InMemoryOrderRepository;
 import com.tienda.repository.JpaOrderHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
     @Mock
@@ -25,6 +30,7 @@ class OrderServiceTest {
         repository = new InMemoryOrderRepository();
         service = new OrderService(repository, orderHistoryRepository);
         product = new Product("p1", "PC Gamer", new BigDecimal("1000"));
+        lenient().doNothing().when(orderHistoryRepository).save(any());
     }
 
     // ─── createOrder() ────────────────────────────────────────
