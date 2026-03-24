@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +32,9 @@ public class ProductController {
         this.productService = productService;
     }
 
+
     @Operation(summary = "Get all products", description = "Returns paginated list of products with optional filters by name and price range")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page,
                                                          @RequestParam (defaultValue = "10") int size,
@@ -44,6 +47,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Get product by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping ("/{id}")
     public ResponseEntity <ProductResponse> getById (@PathVariable String id) {
         log.info("GET /products/{}", id);
@@ -53,6 +57,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Create product", description = "Requeries ADMIN role")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponse> create (@Valid @RequestBody CreateProductRequest request) {
         log.info("POST /products - name={}", request.getName());
@@ -64,6 +69,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Update product price", description = "Requeries ADMIN role")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping ("/{id}/price")
     public ResponseEntity <ProductResponse> updatePrice (@PathVariable String id, @Valid @RequestBody CreateProductRequest request) {
         log.info("PUT /products/{}/price - price={}", id, request.getPrice());
@@ -77,6 +83,7 @@ public class ProductController {
     }
 
     @Operation(summary = "Delete product", description = "Requeries ADMIN role")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping ("/{id}")
     public ResponseEntity <Void> delete (@PathVariable String id) {
         log.info("DELETE /products/{}", id);

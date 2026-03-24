@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Create order")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity <OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
         Order order = service.createOrder(request);
@@ -74,6 +76,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Add product to order")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/products")
     public ResponseEntity<Void> addProduct (@RequestBody AddProductRequest request) {
         service.addProduct(request.getOrderId(),new Product(request.getProductId(), request.getProductName(), request.getPrice()),request.getQuantity());
@@ -90,6 +93,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Confirm order", description = "Order must have at least one item")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{orderId}/confirm")
     public ResponseEntity<Void> confirm (@PathVariable String orderId) {
         service.confirm(orderId);
@@ -108,6 +112,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Pay order", description = "Order must be confirmed first")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{orderId}/pay")
     public ResponseEntity<Void> pay (@PathVariable String orderId) {
         service.pay(orderId);
@@ -129,6 +134,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Cancel order")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancel (@PathVariable String orderId) {
         service.cancel(orderId);
@@ -150,6 +156,7 @@ public class OrderController {
      */
 
     @Operation(summary = "Refund order", description = "Order must be paid first")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{orderId}/refund")
     public ResponseEntity<Void> refund (@PathVariable String orderId) {
         try {
@@ -163,6 +170,7 @@ public class OrderController {
     }
 
     @Operation(summary = "Get all orders", description = "Returns paginated list of orders with optional filters by state and customerId")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity <org.springframework.data.domain.Page<Order>> getOrders (
             @RequestParam (defaultValue = "0") int page,
@@ -175,6 +183,7 @@ public class OrderController {
     }
 
     @Operation(summary = "Get order history", description = "Returns all state changes with timestamps")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{orderId}/history")
     public ResponseEntity<List<OrderHistoryResponse>> getHistory (@PathVariable String orderId) {
         log.info("GET /orders/{}/history", orderId);

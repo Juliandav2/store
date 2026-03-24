@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class CustomerController {
     }
 
     @Operation(summary = "Get all customers")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity <org.springframework.data.domain.Page<CustomerResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
         log.info("GET /customers - page={}, size={}", page, size);
@@ -35,6 +37,7 @@ public class CustomerController {
     }
 
     @Operation (summary = "Get customer by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity <CustomerResponse> getById (@PathVariable String id) {
         log.info("GET /customers/{}", id);
@@ -44,6 +47,7 @@ public class CustomerController {
     }
 
     @Operation(summary = "Create customer", description = "Requires ADMIN role. Type must be PREMIUM or REGULAR")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity <CustomerResponse> create (@Valid @RequestBody CreateCustomerRequest request) {
         log.info("POST /customers - name={}, type={}", request.getName(), request.getType());
@@ -60,6 +64,7 @@ public class CustomerController {
     }
 
     @Operation(summary = "Delete customer", description = "Requires ADMIN role")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping ("/{id}")
     public ResponseEntity <Void> delete (@PathVariable String id) {
         log.info("DELETE /customers/{}", id);
