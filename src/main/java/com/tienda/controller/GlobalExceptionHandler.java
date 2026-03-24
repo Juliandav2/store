@@ -120,4 +120,17 @@ public class GlobalExceptionHandler {
         log.warn("Resource not found: {}", e.getMessage());
         return buildResponse(404, "Not Found", e.getMessage());
     }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
+            org.springframework.dao.DataIntegrityViolationException e) {
+        log.warn("Data integrity violation: {}", e.getMessage());
+        String message = "Data integrity violation";
+        if (e.getMessage() != null && e.getMessage().contains("username")) {
+            message = "Username already exists";
+        } else if (e.getMessage() != null && e.getMessage().contains("email")) {
+            message = "Email already exists";
+        }
+        return buildResponse(409, "Conflict", message);
+    }
 }
