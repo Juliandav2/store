@@ -113,4 +113,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(errors);
 
     }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoResourceFound(
+            org.springframework.web.servlet.resource.NoResourceFoundException e) {
+        log.warn("Resource not found: {}", e.getMessage());
+        return buildResponse(404, "Not Found", e.getMessage());
+    }
 }
