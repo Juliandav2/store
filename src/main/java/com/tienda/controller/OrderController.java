@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
  * <p>Layer: Interface / Presentation</p>
  */
 
+@Tag(name = "Orders", description = "Order management endpoints")
 @RestController
 @RequestMapping ("/orders")
 public class OrderController {
@@ -53,6 +56,7 @@ public class OrderController {
      * @return 201 CREATED with the order response
      */
 
+    @Operation(summary = "Create order")
     @PostMapping
     public ResponseEntity <OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
         Order order = service.createOrder(request);
@@ -69,6 +73,7 @@ public class OrderController {
      * @return 200 OK
      */
 
+    @Operation(summary = "Add product to order")
     @PostMapping("/products")
     public ResponseEntity<Void> addProduct (@RequestBody AddProductRequest request) {
         service.addProduct(request.getOrderId(),new Product(request.getProductId(), request.getProductName(), request.getPrice()),request.getQuantity());
@@ -84,6 +89,7 @@ public class OrderController {
      * @return 200 OK
      */
 
+    @Operation(summary = "Confirm order", description = "Order must have at least one item")
     @PatchMapping("/{orderId}/confirm")
     public ResponseEntity<Void> confirm (@PathVariable String orderId) {
         service.confirm(orderId);
@@ -101,6 +107,7 @@ public class OrderController {
      * @return 200 OK
      */
 
+    @Operation(summary = "Pay order", description = "Order must be confirmed first")
     @PatchMapping("/{orderId}/pay")
     public ResponseEntity<Void> pay (@PathVariable String orderId) {
         service.pay(orderId);
@@ -121,6 +128,7 @@ public class OrderController {
      * @return 200 OK
      */
 
+    @Operation(summary = "Cancel order")
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancel (@PathVariable String orderId) {
         service.cancel(orderId);
@@ -141,6 +149,7 @@ public class OrderController {
      * @return 200 OK
      */
 
+    @Operation(summary = "Refund order", description = "Order must be paid first")
     @PatchMapping("/{orderId}/refund")
     public ResponseEntity<Void> refund (@PathVariable String orderId) {
         try {
@@ -153,6 +162,7 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get all orders", description = "Returns paginated list of orders with optional filters by state and customerId")
     @GetMapping
     public ResponseEntity <org.springframework.data.domain.Page<Order>> getOrders (
             @RequestParam (defaultValue = "0") int page,
@@ -164,6 +174,7 @@ public class OrderController {
         return ResponseEntity.ok(service.getOrders(page, size, state, customerId));
     }
 
+    @Operation(summary = "Get order history", description = "Returns all state changes with timestamps")
     @GetMapping("/{orderId}/history")
     public ResponseEntity<List<OrderHistoryResponse>> getHistory (@PathVariable String orderId) {
         log.info("GET /orders/{}/history", orderId);

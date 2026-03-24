@@ -14,7 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Authentication", description = "Auth endpoints for register, login, refresh and logout")
 @RestController
 @RequestMapping ("/auth")
 public class AuthController {
@@ -37,6 +40,7 @@ public class AuthController {
 
     }
 
+    @Operation(summary = "Register a new user", description = "Role can be USER or ADMIN")
     @PostMapping ("/register")
     public ResponseEntity <AuthResponse> register (@RequestBody RegisterRequest request) {
         log.info("POST /auth/register - username={}", request.getUsername());
@@ -51,6 +55,7 @@ public class AuthController {
     }
 
 
+    @Operation(summary = "Login", description = "Returns access token and refresh token")
     @PostMapping ("/login")
     public ResponseEntity <AuthResponse> login (@RequestBody RegisterRequest request) {
         log.info("POST /auth/login - username={}", request.getUsername());
@@ -61,6 +66,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken.getToken()));
     }
 
+    @Operation(summary = "Refresh access token", description = "Use refresh token to get a new access token")
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh (@RequestBody RefreshTokenRequest request) {
         log.info("POST /auth/refresh");
@@ -71,6 +77,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(accessToken, newRefreshToken.getToken()));
     }
 
+    @Operation(summary = "Logout", description = "Revokes the refresh token")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout (@RequestBody RefreshTokenRequest request) {
         log.info("POST /auth/logout");

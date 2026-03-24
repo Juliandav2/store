@@ -10,11 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Products", description = "Product management endpoints")
 @RestController
 @RequestMapping ("/products")
 public class ProductController {
@@ -28,6 +31,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @Operation(summary = "Get all products", description = "Returns paginated list of products with optional filters by name and price range")
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAll (@RequestParam (defaultValue = "0") int page,
                                                          @RequestParam (defaultValue = "10") int size,
@@ -39,6 +43,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAll(page, size, name, minPrice, maxPrice));
     }
 
+    @Operation(summary = "Get product by ID")
     @GetMapping ("/{id}")
     public ResponseEntity <ProductResponse> getById (@PathVariable String id) {
         log.info("GET /products/{}", id);
@@ -47,6 +52,7 @@ public class ProductController {
         });
     }
 
+    @Operation(summary = "Create product", description = "Requeries ADMIN role")
     @PostMapping
     public ResponseEntity<ProductResponse> create (@Valid @RequestBody CreateProductRequest request) {
         log.info("POST /products - name={}", request.getName());
@@ -57,6 +63,7 @@ public class ProductController {
         return ResponseEntity.status(201).body(response);
     }
 
+    @Operation(summary = "Update product price", description = "Requeries ADMIN role")
     @PutMapping ("/{id}/price")
     public ResponseEntity <ProductResponse> updatePrice (@PathVariable String id, @Valid @RequestBody CreateProductRequest request) {
         log.info("PUT /products/{}/price - price={}", id, request.getPrice());
@@ -69,6 +76,7 @@ public class ProductController {
         });
     }
 
+    @Operation(summary = "Delete product", description = "Requeries ADMIN role")
     @DeleteMapping ("/{id}")
     public ResponseEntity <Void> delete (@PathVariable String id) {
         log.info("DELETE /products/{}", id);

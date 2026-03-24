@@ -10,10 +10,12 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.UUID;
 
+@Tag(name = "Customers", description = "Customer management endpoints")
 @RestController
 @RequestMapping ("/customers")
 public class CustomerController {
@@ -25,12 +27,14 @@ public class CustomerController {
         this.customerRepository = customerRepository;
     }
 
+    @Operation(summary = "Get all customers")
     @GetMapping
     public ResponseEntity <org.springframework.data.domain.Page<CustomerResponse>> getAll (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size) {
         log.info("GET /customers - page={}, size={}", page, size);
         return ResponseEntity.ok(customerRepository.findAll(PageRequest.of(page, size)).map(CustomerResponse::new));
     }
 
+    @Operation (summary = "Get customer by ID")
     @GetMapping("/{id}")
     public ResponseEntity <CustomerResponse> getById (@PathVariable String id) {
         log.info("GET /customers/{}", id);
@@ -39,6 +43,7 @@ public class CustomerController {
         });
     }
 
+    @Operation(summary = "Create customer", description = "Requires ADMIN role. Type must be PREMIUM or REGULAR")
     @PostMapping
     public ResponseEntity <CustomerResponse> create (@Valid @RequestBody CreateCustomerRequest request) {
         log.info("POST /customers - name={}, type={}", request.getName(), request.getType());
@@ -54,6 +59,7 @@ public class CustomerController {
         return ResponseEntity.status(201).body(response);
     }
 
+    @Operation(summary = "Delete customer", description = "Requires ADMIN role")
     @DeleteMapping ("/{id}")
     public ResponseEntity <Void> delete (@PathVariable String id) {
         log.info("DELETE /customers/{}", id);
