@@ -21,9 +21,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig (JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig (JwtAuthFilter jwtAuthFilter, RateLimitFilter rateLimitFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -39,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/products/**").hasRole("ADMIN")
                         .requestMatchers("/customers/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/orders/**").authenticated()
-                        .anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
+                        .anyRequest().authenticated()).addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
 
     }
 
