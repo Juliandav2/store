@@ -3,8 +3,11 @@ package com.tienda.controller;
 import com.tienda.dto.AuthResponse;
 import com.tienda.dto.RefreshTokenRequest;
 import com.tienda.dto.RegisterRequest;
+import com.tienda.model.BlacklistedToken;
 import com.tienda.model.RefreshToken;
 import com.tienda.model.User;
+import com.tienda.repository.JpaTokenBlacklistRepository;
+import org.springframework.web.bind.annotation.RequestHeader;
 import com.tienda.repository.JpaUserRepository;
 import com.tienda.security.JwtService;
 import com.tienda.security.RefreshTokenService;
@@ -29,14 +32,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final EmailService emailService;
+    private final JpaTokenBlacklistRepository tokenBlacklistRepository;
 
-    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, EmailService emailService) {
+    public AuthController (JpaUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, EmailService emailService, JpaTokenBlacklistRepository tokenBlacklistRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.refreshTokenService = refreshTokenService;
         this.emailService = emailService;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
 
     }
 
@@ -79,9 +84,13 @@ public class AuthController {
 
     @Operation(summary = "Logout", description = "Revokes the refresh token")
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout (@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<Void> logout (@RequestBody RefreshTokenRequest request, @RequestHeader ("Authorization") String authHeader) {
         log.info("POST /auth/logout");
         refreshTokenService.revokeAllUserTokens(refreshTokenService.validateRefreshToken(request.getRefreshToken()).getUsername());
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String accessToken = authHeader.substring(7);
+            tokenBlacklistRepository.save(new BlacklistedToken(accessToken));
+        }
         return ResponseEntity.noContent().build();
     }
 

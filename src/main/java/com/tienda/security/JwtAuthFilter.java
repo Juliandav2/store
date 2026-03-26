@@ -1,5 +1,6 @@
 package com.tienda.security;
 
+import com.tienda.repository.JpaTokenBlacklistRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,11 +19,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final JpaTokenBlacklistRepository tokenBlacklistRepository;
 
-    public JwtAuthFilter (JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthFilter (JwtService jwtService, UserDetailsServiceImpl userDetailsService, JpaTokenBlacklistRepository tokenBlacklistRepository) {
 
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        if (!jwtService.isTokenValid(token)) {
+        if (!jwtService.isTokenValid(token) || tokenBlacklistRepository.existsByToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }
